@@ -1,0 +1,24 @@
+### YamlMime:ManagedReference
+items:
+- uid: SadConsole.Extensions
+  commentId: N:SadConsole.Extensions
+  id: SadConsole.Extensions
+  children:
+  - SadConsole.Extensions.ReadOnlySpanExtensions
+  langs:
+  - csharp
+  - vb
+  name: SadConsole.Extensions
+  nameWithType: SadConsole.Extensions
+  fullName: SadConsole.Extensions
+  type: Namespace
+  assemblies:
+  - SadConsole
+references:
+- uid: SadConsole.Extensions.ReadOnlySpanExtensions
+  commentId: T:SadConsole.Extensions.ReadOnlySpanExtensions
+  isExternal: true
+  href: SadConsole.Extensions.ReadOnlySpanExtensions.html
+  name: ReadOnlySpanExtensions
+  nameWithType: ReadOnlySpanExtensions
+  fullName: SadConsole.Extensions.ReadOnlySpanExtensions

@@ -1,0 +1,1033 @@
+### YamlMime:ManagedReference
+items:
+- uid: SadConsole.Host.Global
+  commentId: T:SadConsole.Host.Global
+  id: Global
+  parent: SadConsole.Host
+  children:
+  - SadConsole.Host.Global.BlockSadConsoleInput
+  - SadConsole.Host.Global.GraphicsDevice
+  - SadConsole.Host.Global.GraphicsDeviceManager
+  - SadConsole.Host.Global.RecreateRenderOutput
+  - SadConsole.Host.Global.RecreateRenderOutputHandler(System.Int32,System.Int32)
+  - SadConsole.Host.Global.RenderLoopGameTime
+  - SadConsole.Host.Global.RenderOutput
+  - SadConsole.Host.Global.ResetGraphicsDevice
+  - SadConsole.Host.Global.ResetRendering
+  - SadConsole.Host.Global.ResetRenderingHandler
+  - SadConsole.Host.Global.ResizeGraphicsDeviceManager
+  - SadConsole.Host.Global.ResizeGraphicsDeviceManagerHandler(Microsoft.Xna.Framework.Point,System.Int32,System.Int32,System.Int32,System.Int32)
+  - SadConsole.Host.Global.SadConsoleComponent
+  - SadConsole.Host.Global.SharedSpriteBatch
+  - SadConsole.Host.Global.UpdateLoopGameTime
+  langs:
+  - csharp
+  - vb
+  name: Global
+  nameWithType: Global
+  fullName: SadConsole.Host.Global
+  type: Class
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: Global variables used by the MonoGame host.
+  example: []
+  syntax:
+    content: public static class Global
+    content.vb: Public Module [Global]
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ToString
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.GetHashCode
+- uid: SadConsole.Host.Global.ResetGraphicsDevice
+  commentId: M:SadConsole.Host.Global.ResetGraphicsDevice
+  id: ResetGraphicsDevice
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: ResetGraphicsDevice()
+  nameWithType: Global.ResetGraphicsDevice()
+  fullName: SadConsole.Host.Global.ResetGraphicsDevice()
+  type: Method
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: Sets the <xref href="SadConsole.Host.Global.GraphicsDevice" data-throw-if-not-resolved="false"></xref> render target to <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, targeting the app window.
+  example: []
+  syntax:
+    content: public static void ResetGraphicsDevice()
+    content.vb: Public Shared Sub ResetGraphicsDevice()
+  overload: SadConsole.Host.Global.ResetGraphicsDevice*
+- uid: SadConsole.Host.Global.ResizeGraphicsDeviceManagerHandler(Microsoft.Xna.Framework.Point,System.Int32,System.Int32,System.Int32,System.Int32)
+  commentId: M:SadConsole.Host.Global.ResizeGraphicsDeviceManagerHandler(Microsoft.Xna.Framework.Point,System.Int32,System.Int32,System.Int32,System.Int32)
+  id: ResizeGraphicsDeviceManagerHandler(Microsoft.Xna.Framework.Point,System.Int32,System.Int32,System.Int32,System.Int32)
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: ResizeGraphicsDeviceManagerHandler(Point, int, int, int, int)
+  nameWithType: Global.ResizeGraphicsDeviceManagerHandler(Point, int, int, int, int)
+  fullName: SadConsole.Host.Global.ResizeGraphicsDeviceManagerHandler(Microsoft.Xna.Framework.Point, int, int, int, int)
+  type: Method
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: Resizes the <xref href="SadConsole.Host.Global.GraphicsDeviceManager" data-throw-if-not-resolved="false"></xref> by the specified font size.
+  example: []
+  syntax:
+    content: public static void ResizeGraphicsDeviceManagerHandler(Point fontSize, int width, int height, int additionalWidth, int additionalHeight)
+    parameters:
+    - id: fontSize
+      type: Microsoft.Xna.Framework.Point
+      description: The size of the font to base the final values on.
+    - id: width
+      type: System.Int32
+      description: The count of glyphs along the X-axis.
+    - id: height
+      type: System.Int32
+      description: The count of glyphs along the Y-axis.
+    - id: additionalWidth
+      type: System.Int32
+      description: Additional pixel width to add to the resize.
+    - id: additionalHeight
+      type: System.Int32
+      description: Additional pixel height to add to the resize.
+    content.vb: Public Shared Sub ResizeGraphicsDeviceManagerHandler(fontSize As Point, width As Integer, height As Integer, additionalWidth As Integer, additionalHeight As Integer)
+  overload: SadConsole.Host.Global.ResizeGraphicsDeviceManagerHandler*
+  nameWithType.vb: Global.ResizeGraphicsDeviceManagerHandler(Point, Integer, Integer, Integer, Integer)
+  fullName.vb: SadConsole.Host.Global.ResizeGraphicsDeviceManagerHandler(Microsoft.Xna.Framework.Point, Integer, Integer, Integer, Integer)
+  name.vb: ResizeGraphicsDeviceManagerHandler(Point, Integer, Integer, Integer, Integer)
+- uid: SadConsole.Host.Global.RecreateRenderOutputHandler(System.Int32,System.Int32)
+  commentId: M:SadConsole.Host.Global.RecreateRenderOutputHandler(System.Int32,System.Int32)
+  id: RecreateRenderOutputHandler(System.Int32,System.Int32)
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: RecreateRenderOutputHandler(int, int)
+  nameWithType: Global.RecreateRenderOutputHandler(int, int)
+  fullName: SadConsole.Host.Global.RecreateRenderOutputHandler(int, int)
+  type: Method
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: Regenerates the <xref href="SadConsole.Host.Global.RenderOutput" data-throw-if-not-resolved="false"></xref> if the desired size doesn't match the current size.
+  example: []
+  syntax:
+    content: public static void RecreateRenderOutputHandler(int width, int height)
+    parameters:
+    - id: width
+      type: System.Int32
+      description: The width of the render output.
+    - id: height
+      type: System.Int32
+      description: The height of the render output.
+    content.vb: Public Shared Sub RecreateRenderOutputHandler(width As Integer, height As Integer)
+  overload: SadConsole.Host.Global.RecreateRenderOutputHandler*
+  nameWithType.vb: Global.RecreateRenderOutputHandler(Integer, Integer)
+  fullName.vb: SadConsole.Host.Global.RecreateRenderOutputHandler(Integer, Integer)
+  name.vb: RecreateRenderOutputHandler(Integer, Integer)
+- uid: SadConsole.Host.Global.ResetRenderingHandler
+  commentId: M:SadConsole.Host.Global.ResetRenderingHandler
+  id: ResetRenderingHandler
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: ResetRenderingHandler()
+  nameWithType: Global.ResetRenderingHandler()
+  fullName: SadConsole.Host.Global.ResetRenderingHandler()
+  type: Method
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: Resets the <xref href="SadConsole.Host.Global.RenderOutput" data-throw-if-not-resolved="false"></xref> target and determines the appropriate <xref href="SadConsole.Settings.Rendering.RenderRect" data-throw-if-not-resolved="false"></xref> and <xref href="SadConsole.Settings.Rendering.RenderScale" data-throw-if-not-resolved="false"></xref> based on the window or fullscreen state.
+  example: []
+  syntax:
+    content: public static void ResetRenderingHandler()
+    content.vb: Public Shared Sub ResetRenderingHandler()
+  overload: SadConsole.Host.Global.ResetRenderingHandler*
+- uid: SadConsole.Host.Global.BlockSadConsoleInput
+  commentId: P:SadConsole.Host.Global.BlockSadConsoleInput
+  id: BlockSadConsoleInput
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: BlockSadConsoleInput
+  nameWithType: Global.BlockSadConsoleInput
+  fullName: SadConsole.Host.Global.BlockSadConsoleInput
+  type: Property
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: When <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, prevents the keyboard and mouse logic from running.
+  example: []
+  syntax:
+    content: public static bool BlockSadConsoleInput { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Shared Property BlockSadConsoleInput As Boolean
+  overload: SadConsole.Host.Global.BlockSadConsoleInput*
+- uid: SadConsole.Host.Global.GraphicsDevice
+  commentId: P:SadConsole.Host.Global.GraphicsDevice
+  id: GraphicsDevice
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: GraphicsDevice
+  nameWithType: Global.GraphicsDevice
+  fullName: SadConsole.Host.Global.GraphicsDevice
+  type: Property
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: The graphics device created by MonoGame.
+  example: []
+  syntax:
+    content: public static GraphicsDevice GraphicsDevice { get; set; }
+    parameters: []
+    return:
+      type: Microsoft.Xna.Framework.Graphics.GraphicsDevice
+    content.vb: Public Shared Property GraphicsDevice As GraphicsDevice
+  overload: SadConsole.Host.Global.GraphicsDevice*
+- uid: SadConsole.Host.Global.SharedSpriteBatch
+  commentId: P:SadConsole.Host.Global.SharedSpriteBatch
+  id: SharedSpriteBatch
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: SharedSpriteBatch
+  nameWithType: Global.SharedSpriteBatch
+  fullName: SadConsole.Host.Global.SharedSpriteBatch
+  type: Property
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: A sprite batch used by all of SadConsole to render objects.
+  example: []
+  syntax:
+    content: public static SpriteBatch SharedSpriteBatch { get; set; }
+    parameters: []
+    return:
+      type: Microsoft.Xna.Framework.Graphics.SpriteBatch
+    content.vb: Public Shared Property SharedSpriteBatch As SpriteBatch
+  overload: SadConsole.Host.Global.SharedSpriteBatch*
+- uid: SadConsole.Host.Global.RenderOutput
+  commentId: P:SadConsole.Host.Global.RenderOutput
+  id: RenderOutput
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: RenderOutput
+  nameWithType: Global.RenderOutput
+  fullName: SadConsole.Host.Global.RenderOutput
+  type: Property
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: The output texture. After each screen in SadConsole is drawn, they're then drawn on this output texture to compose the final scene.
+  example: []
+  syntax:
+    content: public static RenderTarget2D RenderOutput { get; set; }
+    parameters: []
+    return:
+      type: Microsoft.Xna.Framework.Graphics.RenderTarget2D
+    content.vb: Public Shared Property RenderOutput As RenderTarget2D
+  overload: SadConsole.Host.Global.RenderOutput*
+- uid: SadConsole.Host.Global.UpdateLoopGameTime
+  commentId: P:SadConsole.Host.Global.UpdateLoopGameTime
+  id: UpdateLoopGameTime
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: UpdateLoopGameTime
+  nameWithType: Global.UpdateLoopGameTime
+  fullName: SadConsole.Host.Global.UpdateLoopGameTime
+  type: Property
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: Reference to the game timer used in the MonoGame update loop.
+  example: []
+  syntax:
+    content: public static GameTime UpdateLoopGameTime { get; }
+    parameters: []
+    return:
+      type: Microsoft.Xna.Framework.GameTime
+    content.vb: Public Shared ReadOnly Property UpdateLoopGameTime As GameTime
+  overload: SadConsole.Host.Global.UpdateLoopGameTime*
+- uid: SadConsole.Host.Global.RenderLoopGameTime
+  commentId: P:SadConsole.Host.Global.RenderLoopGameTime
+  id: RenderLoopGameTime
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: RenderLoopGameTime
+  nameWithType: Global.RenderLoopGameTime
+  fullName: SadConsole.Host.Global.RenderLoopGameTime
+  type: Property
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: Reference to the game timer used in the MonoGame render loop.
+  example: []
+  syntax:
+    content: public static GameTime RenderLoopGameTime { get; }
+    parameters: []
+    return:
+      type: Microsoft.Xna.Framework.GameTime
+    content.vb: Public Shared ReadOnly Property RenderLoopGameTime As GameTime
+  overload: SadConsole.Host.Global.RenderLoopGameTime*
+- uid: SadConsole.Host.Global.RecreateRenderOutput
+  commentId: P:SadConsole.Host.Global.RecreateRenderOutput
+  id: RecreateRenderOutput
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: RecreateRenderOutput
+  nameWithType: Global.RecreateRenderOutput
+  fullName: SadConsole.Host.Global.RecreateRenderOutput
+  type: Property
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: Regenerates the <xref href="SadConsole.Host.Global.RenderOutput" data-throw-if-not-resolved="false"></xref> if the desired size doesn't match the current size.
+  example: []
+  syntax:
+    content: public static Global.RecreateRenderOutputDelegate RecreateRenderOutput { get; set; }
+    parameters: []
+    return:
+      type: SadConsole.Host.Global.RecreateRenderOutputDelegate
+    content.vb: Public Shared Property RecreateRenderOutput As [Global].RecreateRenderOutputDelegate
+  overload: SadConsole.Host.Global.RecreateRenderOutput*
+- uid: SadConsole.Host.Global.ResizeGraphicsDeviceManager
+  commentId: P:SadConsole.Host.Global.ResizeGraphicsDeviceManager
+  id: ResizeGraphicsDeviceManager
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: ResizeGraphicsDeviceManager
+  nameWithType: Global.ResizeGraphicsDeviceManager
+  fullName: SadConsole.Host.Global.ResizeGraphicsDeviceManager
+  type: Property
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: Resizes the <xref href="SadConsole.Host.Global.GraphicsDeviceManager" data-throw-if-not-resolved="false"></xref> by the specified font size.
+  example: []
+  syntax:
+    content: public static Global.ResizeGraphicsDeviceManagerDelegate ResizeGraphicsDeviceManager { get; set; }
+    parameters: []
+    return:
+      type: SadConsole.Host.Global.ResizeGraphicsDeviceManagerDelegate
+    content.vb: Public Shared Property ResizeGraphicsDeviceManager As [Global].ResizeGraphicsDeviceManagerDelegate
+  overload: SadConsole.Host.Global.ResizeGraphicsDeviceManager*
+- uid: SadConsole.Host.Global.ResetRendering
+  commentId: P:SadConsole.Host.Global.ResetRendering
+  id: ResetRendering
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: ResetRendering
+  nameWithType: Global.ResetRendering
+  fullName: SadConsole.Host.Global.ResetRendering
+  type: Property
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: Resets the <xref href="SadConsole.Host.Global.RenderOutput" data-throw-if-not-resolved="false"></xref> target and determines the appropriate <xref href="SadConsole.Settings.Rendering.RenderRect" data-throw-if-not-resolved="false"></xref> and <xref href="SadConsole.Settings.Rendering.RenderScale" data-throw-if-not-resolved="false"></xref> based on the window or fullscreen state.
+  example: []
+  syntax:
+    content: public static Action ResetRendering { get; set; }
+    parameters: []
+    return:
+      type: System.Action
+    content.vb: Public Shared Property ResetRendering As Action
+  overload: SadConsole.Host.Global.ResetRendering*
+- uid: SadConsole.Host.Global.SadConsoleComponent
+  commentId: P:SadConsole.Host.Global.SadConsoleComponent
+  id: SadConsoleComponent
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: SadConsoleComponent
+  nameWithType: Global.SadConsoleComponent
+  fullName: SadConsole.Host.Global.SadConsoleComponent
+  type: Property
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: The game component to control SadConsole updates, input, and rendering.
+  example: []
+  syntax:
+    content: public static SadConsoleGameComponent SadConsoleComponent { get; set; }
+    parameters: []
+    return:
+      type: SadConsole.Host.SadConsoleGameComponent
+    content.vb: Public Shared Property SadConsoleComponent As SadConsoleGameComponent
+  overload: SadConsole.Host.Global.SadConsoleComponent*
+- uid: SadConsole.Host.Global.GraphicsDeviceManager
+  commentId: P:SadConsole.Host.Global.GraphicsDeviceManager
+  id: GraphicsDeviceManager
+  parent: SadConsole.Host.Global
+  langs:
+  - csharp
+  - vb
+  name: GraphicsDeviceManager
+  nameWithType: Global.GraphicsDeviceManager
+  fullName: SadConsole.Host.Global.GraphicsDeviceManager
+  type: Property
+  assemblies:
+  - SadConsole.Host.MonoGame
+  namespace: SadConsole.Host
+  summary: The graphics device manager created by MonoGame.
+  example: []
+  syntax:
+    content: public static GraphicsDeviceManager GraphicsDeviceManager { get; set; }
+    parameters: []
+    return:
+      type: Microsoft.Xna.Framework.GraphicsDeviceManager
+    content.vb: Public Shared Property GraphicsDeviceManager As GraphicsDeviceManager
+  overload: SadConsole.Host.Global.GraphicsDeviceManager*
+references:
+- uid: SadConsole.Host
+  commentId: N:SadConsole.Host
+  isExternal: true
+  href: SadConsole.html
+  name: SadConsole.Host
+  nameWithType: SadConsole.Host
+  fullName: SadConsole.Host
+  spec.csharp:
+  - uid: SadConsole
+    name: SadConsole
+    isExternal: true
+    href: SadConsole.html
+  - name: .
+  - uid: SadConsole.Host
+    name: Host
+    isExternal: true
+    href: SadConsole.Host.html
+  spec.vb:
+  - uid: SadConsole
+    name: SadConsole
+    isExternal: true
+    href: SadConsole.html
+  - name: .
+  - uid: SadConsole.Host
+    name: Host
+    isExternal: true
+    href: SadConsole.Host.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: SadConsole.Host.Global.GraphicsDevice
+  commentId: P:SadConsole.Host.Global.GraphicsDevice
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_GraphicsDevice
+  name: GraphicsDevice
+  nameWithType: Global.GraphicsDevice
+  fullName: SadConsole.Host.Global.GraphicsDevice
+- uid: SadConsole.Host.Global.ResetGraphicsDevice*
+  commentId: Overload:SadConsole.Host.Global.ResetGraphicsDevice
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_ResetGraphicsDevice
+  name: ResetGraphicsDevice
+  nameWithType: Global.ResetGraphicsDevice
+  fullName: SadConsole.Host.Global.ResetGraphicsDevice
+- uid: SadConsole.Host.Global.GraphicsDeviceManager
+  commentId: P:SadConsole.Host.Global.GraphicsDeviceManager
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_GraphicsDeviceManager
+  name: GraphicsDeviceManager
+  nameWithType: Global.GraphicsDeviceManager
+  fullName: SadConsole.Host.Global.GraphicsDeviceManager
+- uid: SadConsole.Host.Global.ResizeGraphicsDeviceManagerHandler*
+  commentId: Overload:SadConsole.Host.Global.ResizeGraphicsDeviceManagerHandler
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_ResizeGraphicsDeviceManagerHandler_Microsoft_Xna_Framework_Point_System_Int32_System_Int32_System_Int32_System_Int32_
+  name: ResizeGraphicsDeviceManagerHandler
+  nameWithType: Global.ResizeGraphicsDeviceManagerHandler
+  fullName: SadConsole.Host.Global.ResizeGraphicsDeviceManagerHandler
+- uid: Microsoft.Xna.Framework.Point
+  commentId: T:Microsoft.Xna.Framework.Point
+  parent: Microsoft.Xna.Framework
+  isExternal: true
+  name: Point
+  nameWithType: Point
+  fullName: Microsoft.Xna.Framework.Point
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: Microsoft.Xna.Framework
+  commentId: N:Microsoft.Xna.Framework
+  isExternal: true
+  href: Microsoft.html
+  name: Microsoft.Xna.Framework
+  nameWithType: Microsoft.Xna.Framework
+  fullName: Microsoft.Xna.Framework
+  spec.csharp:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: Microsoft.html
+  - name: .
+  - uid: Microsoft.Xna
+    name: Xna
+    isExternal: true
+    href: Microsoft.Xna.html
+  - name: .
+  - uid: Microsoft.Xna.Framework
+    name: Framework
+    isExternal: true
+    href: Microsoft.Xna.Framework.html
+  spec.vb:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: Microsoft.html
+  - name: .
+  - uid: Microsoft.Xna
+    name: Xna
+    isExternal: true
+    href: Microsoft.Xna.html
+  - name: .
+  - uid: Microsoft.Xna.Framework
+    name: Framework
+    isExternal: true
+    href: Microsoft.Xna.Framework.html
+- uid: SadConsole.Host.Global.RenderOutput
+  commentId: P:SadConsole.Host.Global.RenderOutput
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_RenderOutput
+  name: RenderOutput
+  nameWithType: Global.RenderOutput
+  fullName: SadConsole.Host.Global.RenderOutput
+- uid: SadConsole.Host.Global.RecreateRenderOutputHandler*
+  commentId: Overload:SadConsole.Host.Global.RecreateRenderOutputHandler
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_RecreateRenderOutputHandler_System_Int32_System_Int32_
+  name: RecreateRenderOutputHandler
+  nameWithType: Global.RecreateRenderOutputHandler
+  fullName: SadConsole.Host.Global.RecreateRenderOutputHandler
+- uid: SadConsole.Settings.Rendering.RenderRect
+  commentId: P:SadConsole.Settings.Rendering.RenderRect
+  isExternal: true
+  href: SadConsole.Settings.Rendering.html#SadConsole_Settings_Rendering_RenderRect
+  name: RenderRect
+  nameWithType: Settings.Rendering.RenderRect
+  fullName: SadConsole.Settings.Rendering.RenderRect
+- uid: SadConsole.Settings.Rendering.RenderScale
+  commentId: P:SadConsole.Settings.Rendering.RenderScale
+  isExternal: true
+  name: RenderScale
+  nameWithType: Settings.Rendering.RenderScale
+  fullName: SadConsole.Settings.Rendering.RenderScale
+- uid: SadConsole.Host.Global.ResetRenderingHandler*
+  commentId: Overload:SadConsole.Host.Global.ResetRenderingHandler
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_ResetRenderingHandler
+  name: ResetRenderingHandler
+  nameWithType: Global.ResetRenderingHandler
+  fullName: SadConsole.Host.Global.ResetRenderingHandler
+- uid: SadConsole.Host.Global.BlockSadConsoleInput*
+  commentId: Overload:SadConsole.Host.Global.BlockSadConsoleInput
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_BlockSadConsoleInput
+  name: BlockSadConsoleInput
+  nameWithType: Global.BlockSadConsoleInput
+  fullName: SadConsole.Host.Global.BlockSadConsoleInput
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: SadConsole.Host.Global.GraphicsDevice*
+  commentId: Overload:SadConsole.Host.Global.GraphicsDevice
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_GraphicsDevice
+  name: GraphicsDevice
+  nameWithType: Global.GraphicsDevice
+  fullName: SadConsole.Host.Global.GraphicsDevice
+- uid: Microsoft.Xna.Framework.Graphics.GraphicsDevice
+  commentId: T:Microsoft.Xna.Framework.Graphics.GraphicsDevice
+  parent: Microsoft.Xna.Framework.Graphics
+  isExternal: true
+  name: GraphicsDevice
+  nameWithType: GraphicsDevice
+  fullName: Microsoft.Xna.Framework.Graphics.GraphicsDevice
+- uid: Microsoft.Xna.Framework.Graphics
+  commentId: N:Microsoft.Xna.Framework.Graphics
+  isExternal: true
+  href: Microsoft.html
+  name: Microsoft.Xna.Framework.Graphics
+  nameWithType: Microsoft.Xna.Framework.Graphics
+  fullName: Microsoft.Xna.Framework.Graphics
+  spec.csharp:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: Microsoft.html
+  - name: .
+  - uid: Microsoft.Xna
+    name: Xna
+    isExternal: true
+    href: Microsoft.Xna.html
+  - name: .
+  - uid: Microsoft.Xna.Framework
+    name: Framework
+    isExternal: true
+    href: Microsoft.Xna.Framework.html
+  - name: .
+  - uid: Microsoft.Xna.Framework.Graphics
+    name: Graphics
+    isExternal: true
+    href: Microsoft.Xna.Framework.Graphics.html
+  spec.vb:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: Microsoft.html
+  - name: .
+  - uid: Microsoft.Xna
+    name: Xna
+    isExternal: true
+    href: Microsoft.Xna.html
+  - name: .
+  - uid: Microsoft.Xna.Framework
+    name: Framework
+    isExternal: true
+    href: Microsoft.Xna.Framework.html
+  - name: .
+  - uid: Microsoft.Xna.Framework.Graphics
+    name: Graphics
+    isExternal: true
+    href: Microsoft.Xna.Framework.Graphics.html
+- uid: SadConsole.Host.Global.SharedSpriteBatch*
+  commentId: Overload:SadConsole.Host.Global.SharedSpriteBatch
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_SharedSpriteBatch
+  name: SharedSpriteBatch
+  nameWithType: Global.SharedSpriteBatch
+  fullName: SadConsole.Host.Global.SharedSpriteBatch
+- uid: Microsoft.Xna.Framework.Graphics.SpriteBatch
+  commentId: T:Microsoft.Xna.Framework.Graphics.SpriteBatch
+  parent: Microsoft.Xna.Framework.Graphics
+  isExternal: true
+  name: SpriteBatch
+  nameWithType: SpriteBatch
+  fullName: Microsoft.Xna.Framework.Graphics.SpriteBatch
+- uid: SadConsole.Host.Global.RenderOutput*
+  commentId: Overload:SadConsole.Host.Global.RenderOutput
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_RenderOutput
+  name: RenderOutput
+  nameWithType: Global.RenderOutput
+  fullName: SadConsole.Host.Global.RenderOutput
+- uid: Microsoft.Xna.Framework.Graphics.RenderTarget2D
+  commentId: T:Microsoft.Xna.Framework.Graphics.RenderTarget2D
+  parent: Microsoft.Xna.Framework.Graphics
+  isExternal: true
+  name: RenderTarget2D
+  nameWithType: RenderTarget2D
+  fullName: Microsoft.Xna.Framework.Graphics.RenderTarget2D
+- uid: SadConsole.Host.Global.UpdateLoopGameTime*
+  commentId: Overload:SadConsole.Host.Global.UpdateLoopGameTime
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_UpdateLoopGameTime
+  name: UpdateLoopGameTime
+  nameWithType: Global.UpdateLoopGameTime
+  fullName: SadConsole.Host.Global.UpdateLoopGameTime
+- uid: Microsoft.Xna.Framework.GameTime
+  commentId: T:Microsoft.Xna.Framework.GameTime
+  parent: Microsoft.Xna.Framework
+  isExternal: true
+  name: GameTime
+  nameWithType: GameTime
+  fullName: Microsoft.Xna.Framework.GameTime
+- uid: SadConsole.Host.Global.RenderLoopGameTime*
+  commentId: Overload:SadConsole.Host.Global.RenderLoopGameTime
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_RenderLoopGameTime
+  name: RenderLoopGameTime
+  nameWithType: Global.RenderLoopGameTime
+  fullName: SadConsole.Host.Global.RenderLoopGameTime
+- uid: SadConsole.Host.Global.RecreateRenderOutput*
+  commentId: Overload:SadConsole.Host.Global.RecreateRenderOutput
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_RecreateRenderOutput
+  name: RecreateRenderOutput
+  nameWithType: Global.RecreateRenderOutput
+  fullName: SadConsole.Host.Global.RecreateRenderOutput
+- uid: SadConsole.Host.Global.RecreateRenderOutputDelegate
+  commentId: T:SadConsole.Host.Global.RecreateRenderOutputDelegate
+  parent: SadConsole.Host
+  isExternal: true
+  href: SadConsole.Host.Global.html
+  name: Global.RecreateRenderOutputDelegate
+  nameWithType: Global.RecreateRenderOutputDelegate
+  fullName: SadConsole.Host.Global.RecreateRenderOutputDelegate
+  spec.csharp:
+  - uid: SadConsole.Host.Global
+    name: Global
+    isExternal: true
+    href: SadConsole.Host.Global.html
+  - name: .
+  - uid: SadConsole.Host.Global.RecreateRenderOutputDelegate
+    name: RecreateRenderOutputDelegate
+    isExternal: true
+    href: SadConsole.Host.Global.RecreateRenderOutputDelegate.html
+  spec.vb:
+  - uid: SadConsole.Host.Global
+    name: Global
+    isExternal: true
+    href: SadConsole.Host.Global.html
+  - name: .
+  - uid: SadConsole.Host.Global.RecreateRenderOutputDelegate
+    name: RecreateRenderOutputDelegate
+    isExternal: true
+    href: SadConsole.Host.Global.RecreateRenderOutputDelegate.html
+- uid: SadConsole.Host.Global.ResizeGraphicsDeviceManager*
+  commentId: Overload:SadConsole.Host.Global.ResizeGraphicsDeviceManager
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_ResizeGraphicsDeviceManager
+  name: ResizeGraphicsDeviceManager
+  nameWithType: Global.ResizeGraphicsDeviceManager
+  fullName: SadConsole.Host.Global.ResizeGraphicsDeviceManager
+- uid: SadConsole.Host.Global.ResizeGraphicsDeviceManagerDelegate
+  commentId: T:SadConsole.Host.Global.ResizeGraphicsDeviceManagerDelegate
+  parent: SadConsole.Host
+  isExternal: true
+  href: SadConsole.Host.Global.html
+  name: Global.ResizeGraphicsDeviceManagerDelegate
+  nameWithType: Global.ResizeGraphicsDeviceManagerDelegate
+  fullName: SadConsole.Host.Global.ResizeGraphicsDeviceManagerDelegate
+  spec.csharp:
+  - uid: SadConsole.Host.Global
+    name: Global
+    isExternal: true
+    href: SadConsole.Host.Global.html
+  - name: .
+  - uid: SadConsole.Host.Global.ResizeGraphicsDeviceManagerDelegate
+    name: ResizeGraphicsDeviceManagerDelegate
+    isExternal: true
+    href: SadConsole.Host.Global.ResizeGraphicsDeviceManagerDelegate.html
+  spec.vb:
+  - uid: SadConsole.Host.Global
+    name: Global
+    isExternal: true
+    href: SadConsole.Host.Global.html
+  - name: .
+  - uid: SadConsole.Host.Global.ResizeGraphicsDeviceManagerDelegate
+    name: ResizeGraphicsDeviceManagerDelegate
+    isExternal: true
+    href: SadConsole.Host.Global.ResizeGraphicsDeviceManagerDelegate.html
+- uid: SadConsole.Host.Global.ResetRendering*
+  commentId: Overload:SadConsole.Host.Global.ResetRendering
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_ResetRendering
+  name: ResetRendering
+  nameWithType: Global.ResetRendering
+  fullName: SadConsole.Host.Global.ResetRendering
+- uid: System.Action
+  commentId: T:System.Action
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.action
+  name: Action
+  nameWithType: Action
+  fullName: System.Action
+- uid: SadConsole.Host.Global.SadConsoleComponent*
+  commentId: Overload:SadConsole.Host.Global.SadConsoleComponent
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_SadConsoleComponent
+  name: SadConsoleComponent
+  nameWithType: Global.SadConsoleComponent
+  fullName: SadConsole.Host.Global.SadConsoleComponent
+- uid: SadConsole.Host.SadConsoleGameComponent
+  commentId: T:SadConsole.Host.SadConsoleGameComponent
+  parent: SadConsole.Host
+  isExternal: true
+  href: SadConsole.Host.SadConsoleGameComponent.html
+  name: SadConsoleGameComponent
+  nameWithType: SadConsoleGameComponent
+  fullName: SadConsole.Host.SadConsoleGameComponent
+- uid: SadConsole.Host.Global.GraphicsDeviceManager*
+  commentId: Overload:SadConsole.Host.Global.GraphicsDeviceManager
+  isExternal: true
+  href: SadConsole.Host.Global.html#SadConsole_Host_Global_GraphicsDeviceManager
+  name: GraphicsDeviceManager
+  nameWithType: Global.GraphicsDeviceManager
+  fullName: SadConsole.Host.Global.GraphicsDeviceManager
+- uid: Microsoft.Xna.Framework.GraphicsDeviceManager
+  commentId: T:Microsoft.Xna.Framework.GraphicsDeviceManager
+  parent: Microsoft.Xna.Framework
+  isExternal: true
+  name: GraphicsDeviceManager
+  nameWithType: GraphicsDeviceManager
+  fullName: Microsoft.Xna.Framework.GraphicsDeviceManager

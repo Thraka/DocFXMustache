@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "z4yie8sa2E0=",
+  "success": true,
+  "projectFilePath": "C:\\Code\\Fun\\DocFXMustache\\DocFXMustache.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\thrak\\.nuget\\packages\\stubble.core\\1.10.8\\stubble.core.1.10.8.nupkg.sha512",
+    "C:\\Users\\thrak\\.nuget\\packages\\system.commandline\\2.0.0-beta4.22272.1\\system.commandline.2.0.0-beta4.22272.1.nupkg.sha512",
+    "C:\\Users\\thrak\\.nuget\\packages\\yamldotnet\\13.7.1\\yamldotnet.13.7.1.nupkg.sha512"
+  ],
+  "logs": []
+}

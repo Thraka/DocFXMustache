@@ -1,0 +1,202 @@
+### YamlMime:ManagedReference
+items:
+- uid: SadConsole.Debug
+  commentId: N:SadConsole.Debug
+  id: SadConsole.Debug
+  children:
+  - SadConsole.Debug.ComponentsPanel
+  - SadConsole.Debug.Debugger
+  - SadConsole.Debug.Debugger.Settings
+  - SadConsole.Debug.GuiDockspace
+  - SadConsole.Debug.GuiPreviews
+  - SadConsole.Debug.GuiScreenObjects
+  - SadConsole.Debug.GuiState
+  - SadConsole.Debug.GuiTopBar
+  - SadConsole.Debug.ScreenObjectDetailsPanel
+  - SadConsole.Debug.ScreenObjectState
+  - SadConsole.Debug.ScreenObjectState.ScreenSurfaceState
+  - SadConsole.Debug.ScreenObjectState.WindowConsoleState
+  langs:
+  - csharp
+  - vb
+  name: SadConsole.Debug
+  nameWithType: SadConsole.Debug
+  fullName: SadConsole.Debug
+  type: Namespace
+  assemblies:
+  - SadConsole.Debug.MonoGame
+references:
+- uid: SadConsole.Debug.ComponentsPanel
+  commentId: T:SadConsole.Debug.ComponentsPanel
+  isExternal: true
+  href: SadConsole.Debug.ComponentsPanel.html
+  name: ComponentsPanel
+  nameWithType: ComponentsPanel
+  fullName: SadConsole.Debug.ComponentsPanel
+- uid: SadConsole.Debug.Debugger
+  commentId: T:SadConsole.Debug.Debugger
+  isExternal: true
+  href: SadConsole.Debug.Debugger.html
+  name: Debugger
+  nameWithType: Debugger
+  fullName: SadConsole.Debug.Debugger
+- uid: SadConsole.Debug.Debugger.Settings
+  commentId: T:SadConsole.Debug.Debugger.Settings
+  isExternal: true
+  href: SadConsole.Debug.Debugger.html
+  name: Debugger.Settings
+  nameWithType: Debugger.Settings
+  fullName: SadConsole.Debug.Debugger.Settings
+  spec.csharp:
+  - uid: SadConsole.Debug.Debugger
+    name: Debugger
+    isExternal: true
+    href: SadConsole.Debug.Debugger.html
+  - name: .
+  - uid: SadConsole.Debug.Debugger.Settings
+    name: Settings
+    isExternal: true
+    href: SadConsole.Debug.Debugger.Settings.html
+  spec.vb:
+  - uid: SadConsole.Debug.Debugger
+    name: Debugger
+    isExternal: true
+    href: SadConsole.Debug.Debugger.html
+  - name: .
+  - uid: SadConsole.Debug.Debugger.Settings
+    name: Settings
+    isExternal: true
+    href: SadConsole.Debug.Debugger.Settings.html
+- uid: SadConsole.Debug.GuiDockspace
+  commentId: T:SadConsole.Debug.GuiDockspace
+  isExternal: true
+  href: SadConsole.Debug.GuiDockspace.html
+  name: GuiDockspace
+  nameWithType: GuiDockspace
+  fullName: SadConsole.Debug.GuiDockspace
+- uid: SadConsole.Debug.GuiPreviews
+  commentId: T:SadConsole.Debug.GuiPreviews
+  isExternal: true
+  href: SadConsole.Debug.GuiPreviews.html
+  name: GuiPreviews
+  nameWithType: GuiPreviews
+  fullName: SadConsole.Debug.GuiPreviews
+- uid: SadConsole.Debug.GuiScreenObjects
+  commentId: T:SadConsole.Debug.GuiScreenObjects
+  isExternal: true
+  href: SadConsole.Debug.GuiScreenObjects.html
+  name: GuiScreenObjects
+  nameWithType: GuiScreenObjects
+  fullName: SadConsole.Debug.GuiScreenObjects
+- uid: SadConsole.Debug.GuiState
+  commentId: T:SadConsole.Debug.GuiState
+  isExternal: true
+  href: SadConsole.Debug.GuiState.html
+  name: GuiState
+  nameWithType: GuiState
+  fullName: SadConsole.Debug.GuiState
+- uid: SadConsole.Debug.GuiTopBar
+  commentId: T:SadConsole.Debug.GuiTopBar
+  isExternal: true
+  href: SadConsole.Debug.GuiTopBar.html
+  name: GuiTopBar
+  nameWithType: GuiTopBar
+  fullName: SadConsole.Debug.GuiTopBar
+- uid: SadConsole.Debug.ScreenObjectDetailsPanel
+  commentId: T:SadConsole.Debug.ScreenObjectDetailsPanel
+  isExternal: true
+  href: SadConsole.Debug.ScreenObjectDetailsPanel.html
+  name: ScreenObjectDetailsPanel
+  nameWithType: ScreenObjectDetailsPanel
+  fullName: SadConsole.Debug.ScreenObjectDetailsPanel
+- uid: SadConsole.Debug.ScreenObjectState
+  commentId: T:SadConsole.Debug.ScreenObjectState
+  parent: SadConsole.Debug
+  isExternal: true
+  href: SadConsole.Debug.ScreenObjectState.html
+  name: ScreenObjectState
+  nameWithType: ScreenObjectState
+  fullName: SadConsole.Debug.ScreenObjectState
+- uid: SadConsole.Debug.ScreenObjectState.ScreenSurfaceState
+  commentId: T:SadConsole.Debug.ScreenObjectState.ScreenSurfaceState
+  parent: SadConsole.Debug
+  isExternal: true
+  href: SadConsole.Debug.ScreenObjectState.html
+  name: ScreenObjectState.ScreenSurfaceState
+  nameWithType: ScreenObjectState.ScreenSurfaceState
+  fullName: SadConsole.Debug.ScreenObjectState.ScreenSurfaceState
+  spec.csharp:
+  - uid: SadConsole.Debug.ScreenObjectState
+    name: ScreenObjectState
+    isExternal: true
+    href: SadConsole.Debug.ScreenObjectState.html
+  - name: .
+  - uid: SadConsole.Debug.ScreenObjectState.ScreenSurfaceState
+    name: ScreenSurfaceState
+    isExternal: true
+    href: SadConsole.Debug.ScreenObjectState.ScreenSurfaceState.html
+  spec.vb:
+  - uid: SadConsole.Debug.ScreenObjectState
+    name: ScreenObjectState
+    isExternal: true
+    href: SadConsole.Debug.ScreenObjectState.html
+  - name: .
+  - uid: SadConsole.Debug.ScreenObjectState.ScreenSurfaceState
+    name: ScreenSurfaceState
+    isExternal: true
+    href: SadConsole.Debug.ScreenObjectState.ScreenSurfaceState.html
+- uid: SadConsole.Debug.ScreenObjectState.WindowConsoleState
+  commentId: T:SadConsole.Debug.ScreenObjectState.WindowConsoleState
+  parent: SadConsole.Debug
+  isExternal: true
+  href: SadConsole.Debug.ScreenObjectState.html
+  name: ScreenObjectState.WindowConsoleState
+  nameWithType: ScreenObjectState.WindowConsoleState
+  fullName: SadConsole.Debug.ScreenObjectState.WindowConsoleState
+  spec.csharp:
+  - uid: SadConsole.Debug.ScreenObjectState
+    name: ScreenObjectState
+    isExternal: true
+    href: SadConsole.Debug.ScreenObjectState.html
+  - name: .
+  - uid: SadConsole.Debug.ScreenObjectState.WindowConsoleState
+    name: WindowConsoleState
+    isExternal: true
+    href: SadConsole.Debug.ScreenObjectState.WindowConsoleState.html
+  spec.vb:
+  - uid: SadConsole.Debug.ScreenObjectState
+    name: ScreenObjectState
+    isExternal: true
+    href: SadConsole.Debug.ScreenObjectState.html
+  - name: .
+  - uid: SadConsole.Debug.ScreenObjectState.WindowConsoleState
+    name: WindowConsoleState
+    isExternal: true
+    href: SadConsole.Debug.ScreenObjectState.WindowConsoleState.html
+- uid: SadConsole.Debug
+  commentId: N:SadConsole.Debug
+  isExternal: true
+  href: SadConsole.html
+  name: SadConsole.Debug
+  nameWithType: SadConsole.Debug
+  fullName: SadConsole.Debug
+  spec.csharp:
+  - uid: SadConsole
+    name: SadConsole
+    isExternal: true
+    href: SadConsole.html
+  - name: .
+  - uid: SadConsole.Debug
+    name: Debug
+    isExternal: true
+    href: SadConsole.Debug.html
+  spec.vb:
+  - uid: SadConsole
+    name: SadConsole
+    isExternal: true
+    href: SadConsole.html
+  - name: .
+  - uid: SadConsole.Debug
+    name: Debug
+    isExternal: true
+    href: SadConsole.Debug.html
