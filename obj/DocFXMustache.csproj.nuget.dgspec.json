@@ -62,9 +62,13 @@
               "target": "Package",
               "version": "[2.0.0-beta4.22272.1, )"
             },
-            "YamlDotNet": {
+            "VYaml": {
               "target": "Package",
-              "version": "[13.7.1, )"
+              "version": "[1.2.0, )"
+            },
+            "ZString": {
+              "target": "Package",
+              "version": "[2.6.0, )"
             }
           },
           "imports": [

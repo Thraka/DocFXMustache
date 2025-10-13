@@ -9,7 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-    <PackageReference Include="YamlDotNet" Version="13.7.1" />
+    <PackageReference Include="VYaml" Version="1.2.0" />
+    <PackageReference Include="ZString" Version="2.6.0" />
     <PackageReference Include="Stubble.Core" Version="1.10.8" />
   </ItemGroup>
 

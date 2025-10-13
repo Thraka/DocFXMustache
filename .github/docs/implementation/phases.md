@@ -4,9 +4,9 @@
 **Goal**: Establish project structure and basic infrastructure
 
 ### Tasks
-- [ ] Set up project structure
-- [ ] Configure NuGet packages (`VYaml`, `ZString`, `Stubble.Core`, `System.CommandLine`)
-- [ ] Implement modern CLI using System.CommandLine with tab completion
+- [x] Set up project structure
+- [x] Configure NuGet packages (`VYaml`, `ZString`, `Stubble.Core`, `System.CommandLine`)
+- [x] Implement modern CLI using System.CommandLine with tab completion
 - [ ] Adapt core data models from `.github\reference-files\Models\`
 - [ ] Set up logging infrastructure
 - [ ] Create initial project structure based on reference implementation

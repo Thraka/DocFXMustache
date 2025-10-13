@@ -69,15 +69,36 @@
           }
         }
       },
-      "YamlDotNet/13.7.1": {
+      "VYaml/1.2.0": {
+        "type": "package",
+        "dependencies": {
+          "VYaml.Annotations": "1.2.0"
+        },
+        "compile": {
+          "lib/net9.0/VYaml.dll": {}
+        },
+        "runtime": {
+          "lib/net9.0/VYaml.dll": {}
+        }
+      },
+      "VYaml.Annotations/1.2.0": {
         "type": "package",
         "compile": {
-          "lib/net7.0/YamlDotNet.dll": {
+          "lib/net8.0/VYaml.Annotations.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/VYaml.Annotations.dll": {}
+        }
+      },
+      "ZString/2.6.0": {
+        "type": "package",
+        "compile": {
+          "lib/net7.0/ZString.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net7.0/YamlDotNet.dll": {
+          "lib/net7.0/ZString.dll": {
             "related": ".xml"
           }
         }
@@ -148,31 +169,57 @@
         "system.commandline.nuspec"
       ]
     },
-    "YamlDotNet/13.7.1": {
-      "sha512": "X4m1PnFcJwvAj1sCDMntg/eZcX96CJLrWMiYnq41KqhFVZPuw63ZTSxIGqgdCwHWHvCAyTxheELC/VDf1HsU2A==",
+    "VYaml/1.2.0": {
+      "sha512": "5A6QOpU9+HVoOj1HsROeakoEk6H6j3paoqg3iMYmOSF7cyYHGcvKll9wdfZjTN8NUTeZmijTQnDwRx6R4ZxSYA==",
       "type": "package",
-      "path": "yamldotnet/13.7.1",
+      "path": "vyaml/1.2.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "LICENSE.txt",
-        "images/yamldotnet.png",
-        "lib/net35/YamlDotNet.dll",
-        "lib/net35/YamlDotNet.xml",
-        "lib/net45/YamlDotNet.dll",
-        "lib/net45/YamlDotNet.xml",
-        "lib/net47/YamlDotNet.dll",
-        "lib/net47/YamlDotNet.xml",
-        "lib/net6.0/YamlDotNet.dll",
-        "lib/net6.0/YamlDotNet.xml",
-        "lib/net7.0/YamlDotNet.dll",
-        "lib/net7.0/YamlDotNet.xml",
-        "lib/netstandard2.0/YamlDotNet.dll",
-        "lib/netstandard2.0/YamlDotNet.xml",
-        "lib/netstandard2.1/YamlDotNet.dll",
-        "lib/netstandard2.1/YamlDotNet.xml",
-        "yamldotnet.13.7.1.nupkg.sha512",
-        "yamldotnet.nuspec"
+        "analyzers/dotnet/roslyn3.8/cs/VYaml.SourceGenerator.Roslyn3.dll",
+        "analyzers/dotnet/roslyn4.1/cs/VYaml.SourceGenerator.dll",
+        "lib/net6.0/VYaml.dll",
+        "lib/net8.0/VYaml.dll",
+        "lib/net9.0/VYaml.dll",
+        "lib/netstandard2.0/VYaml.dll",
+        "lib/netstandard2.1/VYaml.dll",
+        "vyaml.1.2.0.nupkg.sha512",
+        "vyaml.nuspec"
+      ]
+    },
+    "VYaml.Annotations/1.2.0": {
+      "sha512": "4lvRooDFHOG+6V4PitU8dkH9i+iPoTQTq2OGj/y0Z/ebZQ9byQuvlo6TC5gqBTnxfl3puJNAAWZzZhz6SM6dzA==",
+      "type": "package",
+      "path": "vyaml.annotations/1.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net6.0/VYaml.Annotations.dll",
+        "lib/net8.0/VYaml.Annotations.dll",
+        "lib/netstandard2.0/VYaml.Annotations.dll",
+        "lib/netstandard2.1/VYaml.Annotations.dll",
+        "vyaml.annotations.1.2.0.nupkg.sha512",
+        "vyaml.annotations.nuspec"
+      ]
+    },
+    "ZString/2.6.0": {
+      "sha512": "XE8a+11nZg0LRaf+RGABEWaHIf8yGd5w8v/Ra1iWxMBmAVzwuKbW7G21mS0U7w7sh1lYcgckInWGgnz4qyET8A==",
+      "type": "package",
+      "path": "zstring/2.6.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "lib/net6.0/ZString.dll",
+        "lib/net6.0/ZString.xml",
+        "lib/net7.0/ZString.dll",
+        "lib/net7.0/ZString.xml",
+        "lib/netstandard2.0/ZString.dll",
+        "lib/netstandard2.0/ZString.xml",
+        "lib/netstandard2.1/ZString.dll",
+        "lib/netstandard2.1/ZString.xml",
+        "zstring.2.6.0.nupkg.sha512",
+        "zstring.nuspec"
       ]
     }
   },
@@ -180,7 +227,8 @@
     "net10.0": [
       "Stubble.Core >= 1.10.8",
       "System.CommandLine >= 2.0.0-beta4.22272.1",
-      "YamlDotNet >= 13.7.1"
+      "VYaml >= 1.2.0",
+      "ZString >= 2.6.0"
     ]
   },
   "packageFolders": {
@@ -245,9 +293,13 @@
             "target": "Package",
             "version": "[2.0.0-beta4.22272.1, )"
           },
-          "YamlDotNet": {
+          "VYaml": {
             "target": "Package",
-            "version": "[13.7.1, )"
+            "version": "[1.2.0, )"
+          },
+          "ZString": {
+            "target": "Package",
+            "version": "[2.6.0, )"
           }
         },
         "imports": [
