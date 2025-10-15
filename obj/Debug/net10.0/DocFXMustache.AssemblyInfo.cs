@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DocFXMustache")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6eacb55b4523a27d6d8bda00d79e0b83c0bae05f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e87093cbf2f1a2adf2a652219de821ab771f727c")]
 [assembly: System.Reflection.AssemblyProductAttribute("DocFXMustache")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DocFXMustache")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
