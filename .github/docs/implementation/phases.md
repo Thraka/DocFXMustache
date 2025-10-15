@@ -35,6 +35,7 @@
 - [ ] Handle different API item types (classes, interfaces, enums, methods, properties, etc.)
 - [ ] Implement metadata validation and error handling
 - [ ] Test with sample files from `.github\reference-files\api\`
+- [ ] **Add CLI option for filename case control (uppercase/lowercase)**
 
 ### Deliverables
 - Metadata parsing service

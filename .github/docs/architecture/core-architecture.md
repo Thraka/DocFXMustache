@@ -143,6 +143,7 @@ services.AddScoped<IFileOrganizationStrategy>(provider =>
   "templates": "./templates",
   "format": "md",
   "grouping": "flat",
+  "caseHandling": "lowercase",
   "overwrite": false,
   "verbose": false,
   "dryRun": false,
@@ -151,6 +152,12 @@ services.AddScoped<IFileOrganizationStrategy>(provider =>
   }
 }
 ```
+
+### File Naming Conventions
+- **Default Case Handling**: All file and directory names are converted to lowercase for consistency
+- **Directory Names**: Namespace dots (`.`) are converted to hyphens (`-`) and made lowercase
+- **File Names**: Type names are converted to lowercase with invalid characters replaced by hyphens (`-`)
+- **Planned Enhancement**: CLI option to control case handling (lowercase, preserve original)
 
 ## Error Handling Strategy
 

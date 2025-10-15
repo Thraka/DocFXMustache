@@ -26,6 +26,7 @@ The application uses a hierarchical configuration system with the following prio
     "defaultFormat": "md",
     "defaultGrouping": "flat",
     "fileNamingConvention": "lowercase-hyphen",
+    "caseHandling": "lowercase",
     "overwriteExisting": false
   },
   "templates": {
@@ -78,6 +79,8 @@ DocFXMustache [options]
 -f, --format <format>     Output format: md (default) or mdx
 --grouping <strategy>     File grouping strategy: flat, namespace, 
                          assembly-namespace, assembly-flat
+--case <handling>        Filename case handling: lowercase (default), 
+                         uppercase, preserve
 ```
 
 #### Behavior Options
@@ -129,6 +132,7 @@ Controls how files are generated and organized:
     "defaultFormat": "md",              // Default output format
     "defaultGrouping": "flat",          // Default grouping strategy
     "fileNamingConvention": "lowercase-hyphen", // File naming style
+    "caseHandling": "lowercase",        // File/directory case: lowercase, uppercase, preserve
     "overwriteExisting": false,         // Overwrite protection
     "createBackups": false,             // Create .bak files before overwrite
     "cleanOutputDirectory": false       // Clean output dir before generation

@@ -106,15 +106,24 @@ DocFXMustache -i "./api" -o "./docs" -t "./templates" -f md --grouping flat
 
 ## File Naming Conventions
 
+### Default Behavior
+- **Lowercase naming**: All file and directory names are converted to lowercase by default for consistency
+- **Directory names**: Namespace dots (`.`) are converted to hyphens (`-`) and made lowercase (e.g., `System.Collections` → `system-collections`)
+- **File names**: Type names are converted to lowercase with invalid characters replaced by hyphens (e.g., `FileListBox` → `filelistbox.md`)
+
 ### Flat Strategy
-- Use fully qualified type names
-- Replace invalid file system characters
-- Maintain case sensitivity where supported
+- Use fully qualified type names in lowercase
+- Replace invalid file system characters with hyphens
+- Example: `System.Collections.Generic.List<T>` → `system-collections-generic-list-t-.md`
 
 ### Hierarchical Strategies
-- Use simple type names within namespace folders
+- Use simple type names in lowercase within namespace folders
 - Create index files for namespaces when needed
 - Handle special characters in namespace names
+- Example: `Microsoft.Extensions.DependencyInjection` namespace becomes `microsoft-extensions-dependencyinjection/` directory
+
+### Planned Enhancement
+A CLI option for controlling filename case (uppercase/lowercase) will be added in Phase 2 of development, allowing users to override the default lowercase behavior when needed.
 
 ## Future Enhancements
 

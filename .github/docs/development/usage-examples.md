@@ -37,10 +37,10 @@ DocFXMustache -i "./api" -o "./docs" --grouping flat
 **Result:**
 ```
 docs/
-├── SadConsole.ColoredGlyph.md
-├── SadConsole.Components.Cursor.md
-├── SadConsole.UI.Controls.Button.md
-└── Microsoft.Xna.Framework.Graphics.md
+├── sadconsole-coloredglyph.md
+├── sadconsole-components-cursor.md
+├── sadconsole-ui-controls-button.md
+└── microsoft-xna-framework-graphics.md
 ```
 
 ### Namespace Hierarchy
@@ -52,17 +52,17 @@ DocFXMustache -i "./api" -o "./docs" --grouping namespace
 **Result:**
 ```
 docs/
-├── SadConsole/
-│   ├── ColoredGlyph.md
-│   ├── Components/
-│   │   └── Cursor.md
-│   └── UI/
-│       └── Controls/
-│           └── Button.md
-└── Microsoft/
-    └── Xna/
-        └── Framework/
-            └── Graphics.md
+├── sadconsole/
+│   ├── coloredglyph.md
+│   ├── components/
+│   │   └── cursor.md
+│   └── ui/
+│       └── controls/
+│           └── button.md
+└── microsoft/
+    └── xna/
+        └── framework/
+            └── graphics.md
 ```
 
 ### Assembly + Namespace
@@ -74,19 +74,19 @@ DocFXMustache -i "./api" -o "./docs" --grouping assembly-namespace
 **Result:**
 ```
 docs/
-├── SadConsole/
-│   └── SadConsole/
-│       ├── ColoredGlyph.md
-│       ├── Components/
-│       │   └── Cursor.md
-│       └── UI/
-│           └── Controls/
-│               └── Button.md
-└── Microsoft.Xna.Framework/
-    └── Microsoft/
-        └── Xna/
-            └── Framework/
-                └── Graphics.md
+├── sadconsole/
+│   └── sadconsole/
+│       ├── coloredglyph.md
+│       ├── components/
+│       │   └── cursor.md
+│       └── ui/
+│           └── controls/
+│               └── button.md
+└── microsoft-xna-framework/
+    └── microsoft/
+        └── xna/
+            └── framework/
+                └── graphics.md
 ```
 
 ### Assembly + Flat
@@ -98,12 +98,56 @@ DocFXMustache -i "./api" -o "./docs" --grouping assembly-flat
 **Result:**
 ```
 docs/
-├── SadConsole/
-│   ├── SadConsole.ColoredGlyph.md
-│   ├── SadConsole.Components.Cursor.md
-│   └── SadConsole.UI.Controls.Button.md
-└── Microsoft.Xna.Framework/
-    └── Microsoft.Xna.Framework.Graphics.md
+├── sadconsole/
+│   ├── sadconsole-coloredglyph.md
+│   ├── sadconsole-components-cursor.md
+│   └── sadconsole-ui-controls-button.md
+└── microsoft-xna-framework/
+    └── microsoft-xna-framework-graphics.md
+```
+
+## Case Handling Examples
+
+### Default Lowercase (Current Behavior)
+All filenames and directories are lowercase:
+```bash
+DocFXMustache -i "./api" -o "./docs" --case lowercase
+```
+
+**Result:**
+```
+docs/
+├── sadconsole-coloredglyph.md
+├── system-collections-generic-list-t-.md
+└── microsoft-extensions-dependencyinjection-servicelifetime.md
+```
+
+### Preserve Original Case (Planned Feature)
+Maintain original .NET type naming:
+```bash
+DocFXMustache -i "./api" -o "./docs" --case preserve
+```
+
+**Result (Planned):**
+```
+docs/
+├── SadConsole-ColoredGlyph.md
+├── System-Collections-Generic-List-T-.md
+└── Microsoft-Extensions-DependencyInjection-ServiceLifetime.md
+```
+
+### Uppercase (Planned Feature)
+Convert all names to uppercase:
+```bash
+DocFXMustache -i "./api" -o "./docs" --case uppercase
+```
+
+**Result (Planned):**
+```
+docs/
+├── SADCONSOLE-COLOREDGLYPH.md
+├── SYSTEM-COLLECTIONS-GENERIC-LIST-T-.md
+└── MICROSOFT-EXTENSIONS-DEPENDENCYINJECTION-SERVICELIFETIME.md
 ```
 
 ## Development Workflow Examples
