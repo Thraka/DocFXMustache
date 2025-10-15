@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using DocFXMustache.Services;
 
 namespace DocFXMustache;
 
@@ -149,13 +150,58 @@ class Program
             Console.WriteLine($"Scanning for YAML files in: {input.FullName}");
         }
 
-        // TODO: Implement the actual processing logic
-        // This is where we'll add:
-        // 1. YAML metadata parsing
-        // 2. Mustache template processing
-        // 3. File grouping logic
-        // 4. Link resolution
-        // 5. Output generation
+        // Initialize services
+        var parsingService = new MetadataParsingService();
+        var discoveryService = new DiscoveryService(parsingService);
+
+        try
+        {
+            // Phase 2 - Pass 1: Discovery
+            Console.WriteLine("\n🔍 Phase 2 - Pass 1: Discovery");
+            Console.WriteLine("Building UID mappings and file structure...");
+            
+            var uidMappings = await discoveryService.BuildUidMappingsAsync(input.FullName, grouping);
+            
+            if (verbose)
+            {
+                Console.WriteLine($"✅ Discovery completed:");
+                Console.WriteLine($"   - Total UIDs: {uidMappings.TotalUids}");
+                Console.WriteLine($"   - Assemblies: {string.Join(", ", uidMappings.Assemblies)}");
+                Console.WriteLine($"   - Namespaces: {string.Join(", ", uidMappings.Namespaces)}");
+            }
+
+            if (dryRun)
+            {
+                Console.WriteLine("\n📋 Dry Run - Planned Output Structure:");
+                foreach (var mapping in uidMappings.UidToFilePath.Take(10)) // Show first 10
+                {
+                    Console.WriteLine($"   {mapping.Key} → {mapping.Value}");
+                }
+                if (uidMappings.UidToFilePath.Count > 10)
+                {
+                    Console.WriteLine($"   ... and {uidMappings.UidToFilePath.Count - 10} more files");
+                }
+            }
+            else
+            {
+                Console.WriteLine("\n📝 Phase 2 - Pass 2: Generation");
+                Console.WriteLine("(Not yet implemented - Phase 3 coming next)");
+                
+                // TODO: Implement Pass 2
+                // 1. XRef processing using UID mappings
+                // 2. Mustache template processing
+                // 3. File generation
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"❌ Error during processing: {ex.Message}");
+            if (verbose)
+            {
+                Console.Error.WriteLine($"Stack trace: {ex.StackTrace}");
+            }
+            Environment.Exit(1);
+        }
 
         Console.WriteLine("\n✅ Command line parsing completed successfully!");
         Console.WriteLine("📝 Ready to implement core processing logic...");
