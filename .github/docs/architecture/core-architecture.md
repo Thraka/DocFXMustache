@@ -4,23 +4,27 @@
 ```
 DocFXMustache/
 ├── src/
-│   ├── Models/           # Data models for DocFX metadata
-│   ├── Services/         # Core business logic
-│   ├── Templates/        # Template processing
+│   ├── Models/          # Data models for DocFX metadata
+│   ├── Services/        # Core business logic
+│   ├── Templating/      # Template processing
 │   ├── CLI/             # Command line interface
-│   └── Utils/           # Utility classes
-├── templates/           # Default Mustache templates
-│   ├── class.mustache
-│   ├── interface.mustache
-│   ├── enum.mustache
-│   └── namespace.mustache
+│   ├── Utils/           # Utility classes
+│   └── Program.cs
+├── templates/           # Template packs
+│   ├── basic/                   # Testing template
+│   │   └── default.md
+│   └── starlight/               # Starlight template
+│       ├── class.mdx
+│       ├── interface.mdx
+│       ├── enum.mdx
+│       └── namespace.mdx
 ├── tests/              # Unit tests
 └── docs/               # Documentation
 ```
 
 ## Core Components
 
-### 1. Data Models (`Models/`)
+### 1. Data Models (`src/Models/`)
 Based on DocFX metadata structure and reference models in `.github\reference-files\Models\`:
 
 **Primary Models:**
@@ -40,7 +44,7 @@ Based on DocFX metadata structure and reference models in `.github\reference-fil
 - `AttributeDoc` - Attribute documentation
 - `SyntaxContent` - Syntax highlighting content
 
-### 2. Services (`Services/`)
+### 2. Services (`src/Services/`)
 
 **Core Processing Services:**
 - `MetadataParsingService` - Parse YAML metadata files (Pass 1)
@@ -56,12 +60,12 @@ Based on DocFX metadata structure and reference models in `.github\reference-fil
 - `LinkValidationService` - Validate links after Pass 1 discovery
 - `ConfigurationService` - Handle application configuration
 
-### 3. Template Engine (`Templates/`)
+### 3. Template Engine (`src/Templating/`)
 - `TemplateEngine` - Wrapper around Stubble.Core
 - `TemplateResolver` - Resolve template files based on item type
 - `TemplateHelpers` - Custom Mustache helpers for documentation
 
-### 4. CLI (`CLI/`)
+### 4. CLI (`src/Program.cs`)
 - `Program` - Application entry point using System.CommandLine
 - `CliConfiguration` - Configure root command, options, and arguments
 - `CommandHandlers` - Action handlers for parsed commands

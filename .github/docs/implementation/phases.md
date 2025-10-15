@@ -12,7 +12,7 @@
 - [ ] Create initial project structure based on reference implementation
 
 ### Deliverables
-- Project solution with proper structure
+- Project solution with proper structure (Core app under `src/` and test projects under `tests/`)
 - CLI framework with command definitions
 - Basic data models adapted from reference implementation
 - Logging infrastructure configured
