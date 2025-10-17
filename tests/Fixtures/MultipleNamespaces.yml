@@ -1,0 +1,51 @@
+items:
+- uid: "FirstNamespace.ClassA"
+  id: "ClassA"
+  parent: "FirstNamespace"
+  name: "ClassA"
+  fullName: "FirstNamespace.ClassA"
+  type: "Class"
+  namespace: "FirstNamespace"
+  summary: "First namespace class"
+  children: []
+  assemblies:
+  - "TestAssembly"
+  inheritance:
+  - "System.Object"
+  syntax:
+    content: "public class ClassA { }"
+- uid: "SecondNamespace.ClassB"
+  id: "ClassB"
+  parent: "SecondNamespace"
+  name: "ClassB"
+  fullName: "SecondNamespace.ClassB"
+  type: "Class"
+  namespace: "SecondNamespace"
+  summary: "Second namespace class"
+  children: []
+  assemblies:
+  - "TestAssembly"
+  inheritance:
+  - "System.Object"
+  syntax:
+    content: "public class ClassB { }"
+- uid: "FirstNamespace.SecondNamespace.ClassC"
+  id: "ClassC"
+  parent: "FirstNamespace.SecondNamespace"
+  name: "ClassC"
+  fullName: "FirstNamespace.SecondNamespace.ClassC"
+  type: "Class"
+  namespace: "FirstNamespace.SecondNamespace"
+  summary: "Nested namespace class"
+  children: []
+  assemblies:
+  - "TestAssembly"
+  inheritance:
+  - "System.Object"
+  syntax:
+    content: "public class ClassC { }"
+references:
+- uid: "System.Object"
+  name: "Object"
+  fullName: "System.Object"
+  isExternal: true

@@ -1,0 +1,44 @@
+items:
+- uid: "TestNamespace.TestClass"
+  id: "TestClass"
+  parent: "TestNamespace"
+  name: "TestClass"
+  fullName: "TestNamespace.TestClass"
+  type: "Class"
+  namespace: "TestNamespace"
+  summary: "A class with members"
+  children:
+  - "TestNamespace.TestClass.TestMethod"
+  - "TestNamespace.TestClass.TestProperty"
+  assemblies:
+  - "TestAssembly"
+  inheritance:
+  - "System.Object"
+  syntax:
+    content: "public class TestClass { }"
+- uid: "TestNamespace.TestClass.TestMethod"
+  id: "TestMethod"
+  parent: "TestNamespace.TestClass"
+  name: "TestMethod"
+  fullName: "TestNamespace.TestClass.TestMethod"
+  type: "Method"
+  namespace: "TestNamespace"
+  summary: "A test method"
+  syntax:
+    content: "public void TestMethod() { }"
+  children: []
+- uid: "TestNamespace.TestClass.TestProperty"
+  id: "TestProperty"
+  parent: "TestNamespace.TestClass"
+  name: "TestProperty"
+  fullName: "TestNamespace.TestClass.TestProperty"
+  type: "Property"
+  namespace: "TestNamespace"
+  summary: "A test property"
+  syntax:
+    content: "public string TestProperty { get; set; }"
+references:
+- uid: "System.Object"
+  name: "Object"
+  fullName: "System.Object"
+  isExternal: true

@@ -1,0 +1,22 @@
+items:
+- uid: "DocFXMustache.Models.TypeDocumentation"
+  id: "TypeDocumentation"
+  parent: "DocFXMustache.Models"
+  name: "TypeDocumentation"
+  fullName: "DocFXMustache.Models.TypeDocumentation"
+  type: "Class"
+  namespace: "DocFXMustache.Models"
+  summary: "A simple class for testing"
+  remarks: "This is a test class"
+  children: []
+  assemblies:
+  - "DocFXMustache"
+  inheritance:
+  - "System.Object"
+  syntax:
+    content: "public class TypeDocumentation { }"
+references:
+- uid: "System.Object"
+  name: "Object"
+  fullName: "System.Object"
+  isExternal: true
