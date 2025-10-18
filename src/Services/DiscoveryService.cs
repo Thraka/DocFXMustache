@@ -95,7 +95,10 @@ public class DiscoveryService
     /// </summary>
     public string DetermineOutputPath(Item item, string groupingStrategy)
     {
-        var fileName = GetSafeFileName(item.Name ?? item.Uid ?? "unknown");
+        // For flat grouping, use the fully qualified UID; otherwise use just the type name
+        var fileName = groupingStrategy.ToLowerInvariant() == "flat"
+            ? GetSafeFileName(item.Uid ?? item.Name ?? "unknown")
+            : GetSafeFileName(item.Name ?? item.Uid ?? "unknown");
 
         return groupingStrategy.ToLowerInvariant() switch
         {
@@ -179,8 +182,12 @@ public class DiscoveryService
                       .Replace('>', '-')
                       .Replace('`', '-')
                       .Replace('(', '-')
-                      .Replace(')', '-')
-                      .Replace('.', '-');
+                      .Replace(')', '-');
+
+        // Handle DocFX generic parameter notation (e.g., List`1, Dictionary`2)
+        // These should be converted to -1, -2 format (following Microsoft Learn pattern)
+        // The backtick has already been replaced with dash above, so now we have "List-1"
+        // which is correct for the Microsoft Learn pattern
 
         // Convert to lowercase for consistency with directory names
         result = result.ToLowerInvariant();

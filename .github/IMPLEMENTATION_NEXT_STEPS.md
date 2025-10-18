@@ -1,11 +1,5 @@
 # Implementation Next Steps - LLM Quick Start Guide
 
-I don't think the grouping strategy is implemented correctly:
-
-- Check the filename of flat grouping includes the namespace+type.extension
-- The file names shouldn't include symbols that aren't good for web SEO
-- 
-
 ## Phase 3: Template Engine & Link Resolution
 
 ### Priority 1: XRef Processing Service

@@ -1,0 +1,91 @@
+### YamlMime:ManagedReference
+items:
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  id: List`1
+  parent: System.Collections.Generic
+  name: List`1
+  children:
+  - System.Collections.Generic.List`1.#ctor
+  - System.Collections.Generic.List`1.Add(System.Collections.Generic.List{`0})
+  name.csharp: List<T>
+  name.vb: List(Of T)
+  nameWithType.csharp: List<T>
+  nameWithType.vb: List(Of T)
+  fullName.csharp: System.Collections.Generic.List<T>
+  fullName.vb: System.Collections.Generic.List(Of T)
+  type: Class
+  namespace: System.Collections.Generic
+  summary: Represents a strongly typed list of objects that can be accessed by index. Provides methods to search, sort, and manipulate lists.
+  remarks: >-
+    The List<T> generic class provides a type-safe alternative to the ArrayList class. 
+    The capacity of a List<T> is the number of elements the list can hold. 
+    As elements are added to a List<T>, the capacity is automatically increased as required by reallocating the internal array.
+  example: []
+  syntax:
+    content.csharp: 'public class List<T> : System.Collections.Generic.ICollection<T>, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IList<T>, System.Collections.ICollection, System.Collections.IEnumerable, System.Collections.IList'
+    content.vb: 'Public Class List(Of T) Implements System.Collections.Generic.ICollection(Of T), System.Collections.Generic.IEnumerable(Of T), System.Collections.Generic.IList(Of T), System.Collections.ICollection, System.Collections.IEnumerable, System.Collections.IList'
+  typeParameters:
+  - id: T
+    description: The type of elements in the list.
+  inheritance:
+  - System.Object
+  implements:
+  - System.Collections.Generic.ICollection{{T}}
+  - System.Collections.Generic.IEnumerable{{T}}
+  - System.Collections.Generic.IList{{T}}
+  - System.Collections.ICollection
+  - System.Collections.IEnumerable
+  - System.Collections.IList
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ToString
+  assemblies:
+  - System.Collections
+  - System.Runtime
+references:
+- uid: System.Object
+  name.csharp: object
+  name.vb: Object
+  fullName.csharp: System.Object
+  fullName.vb: System.Object
+  isExternal: true
+- uid: System.Collections.Generic.ICollection`1
+  name.csharp: ICollection<T>
+  name.vb: ICollection(Of T)
+  fullName.csharp: System.Collections.Generic.ICollection<T>
+  fullName.vb: System.Collections.Generic.ICollection(Of T)
+  isExternal: true
+- uid: System.Collections.Generic.IEnumerable`1
+  name.csharp: IEnumerable<T>
+  name.vb: IEnumerable(Of T)
+  fullName.csharp: System.Collections.Generic.IEnumerable<T>
+  fullName.vb: System.Collections.Generic.IEnumerable(Of T)
+  isExternal: true
+- uid: System.Collections.Generic.IList`1
+  name.csharp: IList<T>
+  name.vb: IList(Of T)
+  fullName.csharp: System.Collections.Generic.IList<T>
+  fullName.vb: System.Collections.Generic.IList(Of T)
+  isExternal: true
+- uid: System.Collections.ICollection
+  name.csharp: ICollection
+  name.vb: ICollection
+  fullName.csharp: System.Collections.ICollection
+  fullName.vb: System.Collections.ICollection
+  isExternal: true
+- uid: System.Collections.IEnumerable
+  name.csharp: IEnumerable
+  name.vb: IEnumerable
+  fullName.csharp: System.Collections.IEnumerable
+  fullName.vb: System.Collections.IEnumerable
+  isExternal: true
+- uid: System.Collections.IList
+  name.csharp: IList
+  name.vb: IList
+  fullName.csharp: System.Collections.IList
+  fullName.vb: System.Collections.IList
+  isExternal: true

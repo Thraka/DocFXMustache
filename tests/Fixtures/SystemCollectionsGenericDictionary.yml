@@ -1,0 +1,99 @@
+### YamlMime:ManagedReference
+items:
+- uid: System.Collections.Generic.Dictionary`2
+  commentId: T:System.Collections.Generic.Dictionary`2
+  id: Dictionary`2
+  parent: System.Collections.Generic
+  name: Dictionary`2
+  children:
+  - System.Collections.Generic.Dictionary`2.#ctor
+  - System.Collections.Generic.Dictionary`2.Add(System.Collections.Generic.Dictionary{`0,`1})
+  name.csharp: Dictionary<TKey, TValue>
+  name.vb: Dictionary(Of TKey, TValue)
+  nameWithType.csharp: Dictionary<TKey, TValue>
+  nameWithType.vb: Dictionary(Of TKey, TValue)
+  fullName.csharp: System.Collections.Generic.Dictionary<TKey, TValue>
+  fullName.vb: System.Collections.Generic.Dictionary(Of TKey, TValue)
+  type: Class
+  namespace: System.Collections.Generic
+  summary: Represents a collection of keys and values.
+  remarks: >-
+    Dictionary<TKey, TValue> is a generic collection that stores key/value pairs.
+    The key is used to look up and retrieve the associated value.
+    Every key in a Dictionary<TKey, TValue> must be unique according to the dictionary's equality comparer.
+  example: []
+  syntax:
+    content.csharp: 'public class Dictionary<TKey, TValue> : System.Collections.Generic.ICollection<System.Collections.Generic.KeyValuePair<TKey, TValue>>, System.Collections.Generic.IDictionary<TKey, TValue>, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<TKey, TValue>>, System.Collections.ICollection, System.Collections.IDictionary, System.Collections.IEnumerable'
+    content.vb: 'Public Class Dictionary(Of TKey, TValue) Implements System.Collections.Generic.ICollection(Of System.Collections.Generic.KeyValuePair(Of TKey, TValue)), System.Collections.Generic.IDictionary(Of TKey, TValue), System.Collections.Generic.IEnumerable(Of System.Collections.Generic.KeyValuePair(Of TKey, TValue)), System.Collections.ICollection, System.Collections.IDictionary, System.Collections.IEnumerable'
+  typeParameters:
+  - id: TKey
+    description: The type of the keys in the dictionary.
+  - id: TValue
+    description: The type of the values in the dictionary.
+  inheritance:
+  - System.Object
+  implements:
+  - System.Collections.Generic.ICollection{{System.Collections.Generic.KeyValuePair{`0,`1}}}
+  - System.Collections.Generic.IDictionary{{`0},{`1}}
+  - System.Collections.Generic.IEnumerable{{System.Collections.Generic.KeyValuePair{`0,`1}}}
+  - System.Collections.ICollection
+  - System.Collections.IDictionary
+  - System.Collections.IEnumerable
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ToString
+  assemblies:
+  - System.Collections
+  - System.Runtime
+references:
+- uid: System.Object
+  name.csharp: object
+  name.vb: Object
+  fullName.csharp: System.Object
+  fullName.vb: System.Object
+  isExternal: true
+- uid: System.Collections.Generic.ICollection`1
+  name.csharp: ICollection<T>
+  name.vb: ICollection(Of T)
+  fullName.csharp: System.Collections.Generic.ICollection<T>
+  fullName.vb: System.Collections.Generic.ICollection(Of T)
+  isExternal: true
+- uid: System.Collections.Generic.IDictionary`2
+  name.csharp: IDictionary<TKey, TValue>
+  name.vb: IDictionary(Of TKey, TValue)
+  fullName.csharp: System.Collections.Generic.IDictionary<TKey, TValue>
+  fullName.vb: System.Collections.Generic.IDictionary(Of TKey, TValue)
+  isExternal: true
+- uid: System.Collections.Generic.IEnumerable`1
+  name.csharp: IEnumerable<T>
+  name.vb: IEnumerable(Of T)
+  fullName.csharp: System.Collections.Generic.IEnumerable<T>
+  fullName.vb: System.Collections.Generic.IEnumerable(Of T)
+  isExternal: true
+- uid: System.Collections.Generic.KeyValuePair`2
+  name.csharp: KeyValuePair<TKey, TValue>
+  name.vb: KeyValuePair(Of TKey, TValue)
+  fullName.csharp: System.Collections.Generic.KeyValuePair<TKey, TValue>
+  fullName.vb: System.Collections.Generic.KeyValuePair(Of TKey, TValue)
+  isExternal: true
+- uid: System.Collections.ICollection
+  name.csharp: ICollection
+  name.vb: ICollection
+  fullName.csharp: System.Collections.ICollection
+  fullName.vb: System.Collections.ICollection
+  isExternal: true
+- uid: System.Collections.IDictionary
+  name.csharp: IDictionary
+  name.vb: IDictionary
+  fullName.csharp: System.Collections.IDictionary
+  fullName.vb: System.Collections.IDictionary
+  isExternal: true
+- uid: System.Collections.IEnumerable
+  name.csharp: IEnumerable
+  name.vb: IEnumerable
+  fullName.csharp: System.Collections.IEnumerable
+  fullName.vb: System.Collections.IEnumerable
+  isExternal: true
