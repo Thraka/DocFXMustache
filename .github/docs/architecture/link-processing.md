@@ -12,73 +12,191 @@ DocFX metadata files contain two types of links:
 
 ### Link Resolution Process
 
-#### 1. UID Mapping
-During the metadata parsing phase, the system builds a comprehensive UID-to-file mapping:
+#### 1. UID Mapping (Template-Aware)
+During the metadata parsing phase, the system builds a comprehensive UID-to-file mapping. **Critically, this mapping must account for template decisions about file organization** - whether types, methods, and properties get individual files or are combined.
 
+**Template Organization Strategies:**
+- **Separate Pages**: Each type, method, property gets its own file
+  - `SadConsole.ColoredGlyph` → `ColoredGlyph.md`
+  - `SadConsole.ColoredGlyph.Foreground` → `ColoredGlyph.Foreground.md`
+  
+- **Combined Pages** (Common): Types contain members inline
+  - `SadConsole.ColoredGlyph` → `ColoredGlyph.md`
+  - `SadConsole.ColoredGlyph.Foreground` → `ColoredGlyph.md#foreground` (anchor link)
+  - `SadConsole.ColoredGlyph.Clone()` → `ColoredGlyph.md#clone` (anchor link)
+
+**UID Mapping Creation:**
 ```csharp
 public class UidResolver
 {
     private readonly Dictionary<string, OutputFileInfo> _uidToFileMap;
     private readonly IFileOrganizationStrategy _organizationStrategy;
+    private readonly TemplateConfiguration _templateConfig;
+    
+    public void BuildUidMappings(IEnumerable<Item> items)
+    {
+        foreach (var item in items)
+        {
+            // Determine output location based on template configuration
+            var outputLocation = DetermineOutputLocation(item);
+            
+            _uidToFileMap[item.Uid] = outputLocation;
+            
+            // If template combines members with parent type, map members to parent file
+            if (_templateConfig.CombineMembersWithType)
+            {
+                foreach (var child in item.Children ?? Enumerable.Empty<string>())
+                {
+                    var childItem = FindItemByUid(child);
+                    if (childItem != null && IsMember(childItem))
+                    {
+                        // Member UIDs point to parent file with anchor
+                        _uidToFileMap[child] = new OutputFileInfo
+                        {
+                            FilePath = outputLocation.FilePath,
+                            Anchor = GenerateAnchor(childItem.Name)
+                        };
+                    }
+                }
+            }
+        }
+    }
     
     public string ResolveUidToRelativePath(string fromFilePath, string targetUid)
     {
-        // Resolve target UID to output file path
-        // Calculate relative path from current context
-        // Return proper relative path or external URL
+        var targetInfo = _uidToFileMap[targetUid];
+        var relativePath = CalculateRelativePath(fromFilePath, targetInfo.FilePath);
+        
+        // Add anchor if member is on parent type page
+        if (!string.IsNullOrEmpty(targetInfo.Anchor))
+        {
+            relativePath += $"#{targetInfo.Anchor}";
+        }
+        
+        return relativePath;
     }
+}
+
+public class OutputFileInfo
+{
+    public string FilePath { get; set; }      // e.g., "output/SadConsole/ColoredGlyph.md"
+    public string Anchor { get; set; }        // e.g., "foreground" (optional, for members)
+}
+
+public class TemplateConfiguration
+{
+    public bool CombineMembersWithType { get; set; }  // true = methods/props in type file
+    public bool GenerateIndexFiles { get; set; }
+    public bool IncludeInheritedMembers { get; set; }
 }
 ```
 
 #### 2. Context-Aware Path Resolution
 The link resolver must consider the context (current file location) when generating relative paths:
 
-**Example Scenario:**
+**Example Scenario 1 - Separate Files:**
 - Current file: `output/SadConsole/UI/Controls/Button.md`
-- Target UID: `SadConsole.ColoredGlyph`
+- Target UID: `SadConsole.ColoredGlyph` (separate file)
 - Target file: `output/SadConsole/ColoredGlyph.md`
 - Required relative path: `../../ColoredGlyph.md`
 
+**Example Scenario 2 - Combined Files (Member Link):**
+- Current file: `output/SadConsole/UI/Controls/Button.md`
+- Target UID: `SadConsole.ColoredGlyph.Foreground` (property on parent type page)
+- Target file: `output/SadConsole/ColoredGlyph.md`
+- Target anchor: `#foreground`
+- Required relative path: `../../ColoredGlyph.md#foreground`
+
+**Example Scenario 3 - Link Within Same File:**
+- Current file: `output/SadConsole/ColoredGlyph.md`
+- Target UID: `SadConsole.ColoredGlyph.Clone()` (method on same page)
+- Required relative path: `#clone` (anchor-only link)
+
 ## XRef Tag Processing
 
-### Data Transformation Approach
-The system parses xref tags and transforms them into structured data, but templates decide the final rendering:
+### Link Template Approach (Chosen Implementation)
+The system uses a dedicated **`link.mustache` template** to format individual links. XrefProcessingService resolves UIDs and processes each link through the link template, then injects the rendered links back into the content.
+
+**Design Principle**: XrefProcessingService resolves UIDs to paths and creates `LinkInfo` data objects, but **delegates link formatting to `link.mustache`**. This keeps the service platform-agnostic while giving templates full control over link rendering.
+
+**Processing Flow:**
+```
+Raw YAML → Extract xref → Resolve UID → Create LinkInfo → Render link.mustache → Inject into content
+```
 
 **Raw YAML Content:**
 ```yaml
 summary: "Based on the <xref href=\"SadConsole.Ansi.State.Bold\" data-throw-if-not-resolved=\"false\"></xref> property."
 ```
 
-**Transformed Template Data:**
+**Step 1: XrefProcessingService extracts and resolves:**
+```csharp
+// Found xref tag with UID "SadConsole.Ansi.State.Bold"
+var linkInfo = new LinkInfo 
+{
+    Uid = "SadConsole.Ansi.State.Bold",
+    DisplayName = "Bold",
+    RelativePath = "../../Bold.md",
+    IsExternal = false
+};
+```
+
+**Step 2: Render through `link.mustache`:**
+```mustache
+<!-- templates/basic/link.mustache -->
+[{{displayName}}]({{relativePath}})
+```
+Result: `[Bold](../../Bold.md)`
+
+**Step 3: Final template data:**
 ```json
 {
-  "summary": {
-    "text": "Based on the {0} property.",
-    "links": [
-      {
-        "uid": "SadConsole.Ansi.State.Bold",
-        "displayName": "Bold",
-        "relativePath": "../../Bold.md",
-        "isExternal": false
-      }
-    ]
-  }
+  "summary": "Based on the [Bold](../../Bold.md) property."
 }
 ```
 
-### Template-Controlled Rendering
-Templates choose how to render these links:
+### Link Template Examples
+
+Different template directories provide different `link.mustache` implementations:
 
 ```mustache
-<!-- For Markdown output -->
-{{summary.text}}{{#summary.links}} [{{displayName}}]({{relativePath}}){{/summary.links}}
+<!-- templates/basic/link.mustache - Standard Markdown -->
+[{{displayName}}]({{relativePath}})
 
-<!-- For MDX with custom components -->
-{{summary.text}}{{#summary.links}} <ApiLink href="{{relativePath}}">{{displayName}}</ApiLink>{{/summary.links}}
+<!-- templates/starlight/link.mustache - Astro/Starlight -->
+[{{displayName}}]({{relativePath}})
 
-<!-- For HTML output -->
-{{summary.text}}{{#summary.links}} <a href="{{relativePath}}">{{displayName}}</a>{{/summary.links}}
+<!-- templates/mdx/link.mustache - MDX with custom component -->
+<ApiLink href="{{relativePath}}">{{displayName}}</ApiLink>
+
+<!-- templates/docusaurus/link.mustache - Docusaurus format -->
+[{{displayName}}](./{{relativePath}})
+
+<!-- templates/html/link.mustache - HTML output -->
+<a href="{{relativePath}}" class="api-link">{{displayName}}</a>
 ```
+
+### Main Template Usage
+
+Main templates (e.g., `class.mustache`) receive fully processed content:
+
+```mustache
+# {{name}} Class
+
+## Summary
+{{{summary}}}
+<!-- Triple braces {{{ }}} render unescaped (preserves markdown/HTML) -->
+
+## Remarks
+{{{remarks}}}
+```
+
+### Benefits of This Approach
+1. **Template Control**: Link formatting entirely controlled by `link.mustache`
+2. **Platform-Agnostic Core**: XrefProcessingService has no format-specific logic
+3. **Easy Extensibility**: New output formats only require new `link.mustache`
+4. **Simple Integration**: Main templates just render pre-processed strings
+5. **Testability**: Link rendering can be tested independently
 
 ## File Grouping Impact on Links
 
@@ -108,63 +226,105 @@ Relative path: "../../ColoredGlyph.md"
 ```csharp
 public class LinkResolutionService
 {
-    public void BuildUidMappings(IEnumerable<MetadataFile> metadataFiles);
+    private readonly Dictionary<string, OutputFileInfo> _uidToFileMap;
+    private readonly TemplateConfiguration _templateConfig;
+    
+    public void BuildUidMappings(IEnumerable<Item> items, TemplateConfiguration config);
     public string ResolveInternalLink(string fromPath, string targetUid);
     public string ResolveExternalLink(string uid, string fallbackUrl);
     public bool IsExternalReference(string uid);
     public ProcessedContent ProcessXrefTags(string content, string currentFilePath);
+    
+    // NEW: Determine if member should be on separate page or parent page
+    private OutputFileInfo DetermineOutputLocation(Item item);
+    
+    // NEW: Generate anchor for members on parent pages
+    private string GenerateAnchor(string memberName);
+}
+
+public class OutputFileInfo
+{
+    public string FilePath { get; set; }      // Full path to output file
+    public string Anchor { get; set; }        // Optional anchor for members (e.g., "#foreground")
+}
+
+public class TemplateConfiguration
+{
+    public bool CombineMembersWithType { get; set; }  // Combine methods/props with parent type
+    public bool GenerateIndexFiles { get; set; }       // Generate namespace/assembly index files
+    public bool IncludeInheritedMembers { get; set; }  // Include inherited members in output
 }
 ```
 
 ### 2. XRef Processing Service
 ```csharp
-public class XrefProcessor
+public class XrefProcessingService
 {
     private static readonly Regex XrefPattern = new Regex(
         @"<xref\s+href=""([^""]+)""[^>]*></xref>", 
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
     
-    public ProcessedContent ProcessXrefs(string content, string currentFilePath)
+    private readonly LinkResolutionService _linkResolver;
+    private readonly IStubbleRenderer _renderer;
+    private readonly string _linkTemplate;
+    
+    public XrefProcessingService(LinkResolutionService linkResolver, string templateDirectory)
     {
-        var links = new List<LinkInfo>();
-        var processedText = content;
-        int linkIndex = 0;
-        
-        processedText = XrefPattern.Replace(content, match => 
+        _linkResolver = linkResolver;
+        _renderer = new StubbleBuilder().Build();
+        _linkTemplate = File.ReadAllText(Path.Combine(templateDirectory, "link.mustache"));
+    }
+    
+    /// <summary>
+    /// Processes xref tags by rendering each through link.mustache template.
+    /// Returns content with all xrefs replaced by formatted links.
+    /// </summary>
+    public string ProcessXrefs(string content, string currentFilePath)
+    {
+        return XrefPattern.Replace(content, match => 
         {
             var uid = match.Groups[1].Value;
-            var resolvedPath = _linkResolver.ResolveInternalLink(currentFilePath, uid);
-            var displayName = ExtractDisplayName(uid);
-            var isExternal = _linkResolver.IsExternalReference(uid);
             
-            links.Add(new LinkInfo 
-            { 
-                Uid = uid, 
-                DisplayName = displayName, 
-                RelativePath = resolvedPath,
-                IsExternal = isExternal
-            });
+            // Create link info object
+            var linkInfo = CreateLinkInfo(uid, currentFilePath);
             
-            return $"{{{linkIndex++}}}"; // Placeholder for template processing
+            // Render through link.mustache template
+            return RenderLink(linkInfo);
         });
+    }
+    
+    public LinkInfo CreateLinkInfo(string uid, string currentFilePath)
+    {
+        var resolvedPath = _linkResolver.ResolveInternalLink(currentFilePath, uid);
+        var isExternal = _linkResolver.IsExternalReference(uid);
         
-        return new ProcessedContent 
+        return new LinkInfo 
         { 
-            Text = processedText, 
-            Links = links 
+            Uid = uid, 
+            DisplayName = ExtractDisplayName(uid), 
+            RelativePath = resolvedPath,
+            IsExternal = isExternal,
+            ExternalUrl = isExternal ? _linkResolver.ResolveExternalLink(uid, null) : null
         };
+    }
+    
+    public string RenderLink(LinkInfo linkInfo)
+    {
+        // Render using link.mustache template
+        return _renderer.Render(_linkTemplate, linkInfo);
+    }
+    
+    private string ExtractDisplayName(string uid)
+    {
+        // Extract simple name from UID (e.g., "SadConsole.ColoredGlyph" -> "ColoredGlyph")
+        var lastDot = uid.LastIndexOf('.');
+        return lastDot >= 0 ? uid.Substring(lastDot + 1) : uid;
     }
 }
 ```
 
 ### 3. Data Models
 ```csharp
-public class ProcessedContent
-{
-    public string Text { get; set; }
-    public List<LinkInfo> Links { get; set; }
-}
-
 public class LinkInfo
 {
     public string Uid { get; set; }
@@ -173,6 +333,8 @@ public class LinkInfo
     public bool IsExternal { get; set; }
     public string ExternalUrl { get; set; }
 }
+
+// Note: ProcessedContent class not needed - XrefProcessingService returns string directly
 ```
 
 ## External References

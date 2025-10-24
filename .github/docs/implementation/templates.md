@@ -1,5 +1,129 @@
 # Default Templates
 
+## Template Organization Modes
+
+Templates can organize API members in two different ways, controlled by template configuration:
+
+### Mode 1: Combined Members (Recommended Default)
+**All members are documented on the parent type's page with anchor links.**
+
+- `SadConsole.ColoredGlyph` → `ColoredGlyph.md` (includes all members)
+- `SadConsole.ColoredGlyph.Foreground` → `ColoredGlyph.md#foreground` (anchor link)
+- `SadConsole.ColoredGlyph.Clone()` → `ColoredGlyph.md#clone` (anchor link)
+
+**Advantages:**
+- Single-page documentation per type
+- Better for browsing and reading
+- Reduces file count
+- Common pattern in most documentation systems
+
+**Template Configuration** (`template.json`):
+```json
+{
+  "combineMembers": true,
+  "generateIndexFiles": true,
+  "includeInheritedMembers": false
+}
+```
+
+### Mode 2: Separate Member Files
+**Each member gets its own documentation file.**
+
+- `SadConsole.ColoredGlyph` → `ColoredGlyph.md`
+- `SadConsole.ColoredGlyph.Foreground` → `ColoredGlyph.Foreground.md`
+- `SadConsole.ColoredGlyph.Clone()` → `ColoredGlyph.Clone.md`
+
+**Advantages:**
+- More granular organization
+- Better for deep-linking to specific members
+- Easier to track changes in version control (per-member)
+
+**Template Configuration** (`template.json`):
+```json
+{
+  "combineMembers": false,
+  "generateIndexFiles": true,
+  "includeInheritedMembers": false
+}
+```
+
+### Impact on UID Mappings
+
+The `combineMembers` setting affects how UIDs are mapped to file paths during Pass 1:
+
+```csharp
+// When combineMembers = true
+_uidToFileMap["SadConsole.ColoredGlyph.Foreground"] = new OutputFileInfo
+{
+    FilePath = "ColoredGlyph.md",
+    Anchor = "foreground"
+};
+
+// When combineMembers = false
+_uidToFileMap["SadConsole.ColoredGlyph.Foreground"] = new OutputFileInfo
+{
+    FilePath = "ColoredGlyph.Foreground.md",
+    Anchor = null
+};
+```
+
+### Link Resolution Differences
+
+**Combined Members:**
+```markdown
+See [Foreground](../../ColoredGlyph.md#foreground) property.
+See [Clone](../../ColoredGlyph.md#clone) method.
+See [ColoredGlyph](../../ColoredGlyph.md) class.
+```
+
+**Separate Files:**
+```markdown
+See [Foreground](../../ColoredGlyph.Foreground.md) property.
+See [Clone](../../ColoredGlyph.Clone.md) method.
+See [ColoredGlyph](../../ColoredGlyph.md) class.
+```
+
+## Template Configuration File
+
+Each template directory should include a `template.json` configuration file:
+
+**Location**: `templates/{template-name}/template.json`
+
+**Schema**:
+```json
+{
+  "name": "basic",
+  "description": "Basic Markdown template for general documentation",
+  "version": "1.0.0",
+  "combineMembers": true,
+  "generateIndexFiles": true,
+  "includeInheritedMembers": false,
+  "templates": {
+    "class": "class.mustache",
+    "interface": "interface.mustache",
+    "enum": "enum.mustache",
+    "struct": "struct.mustache",
+    "namespace": "namespace.mustache",
+    "assembly": "assembly.mustache",
+    "link": "link.mustache",
+    "member": "member.mustache"
+  }
+}
+```
+
+### Configuration Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `combineMembers` | boolean | `true` | Combine members with parent type vs. separate files |
+| `generateIndexFiles` | boolean | `true` | Generate namespace and assembly index files |
+| `includeInheritedMembers` | boolean | `false` | Include inherited members in type documentation |
+| `templates.class` | string | `"class.mustache"` | Template file for classes |
+| `templates.interface` | string | `"interface.mustache"` | Template file for interfaces |
+| `templates.enum` | string | `"enum.mustache"` | Template file for enums |
+| `templates.link` | string | `"link.mustache"` | Template for rendering individual links |
+| `templates.member` | string | `"member.mustache"` | Template for individual members (when `combineMembers=false`) |
+
 ## Template Types
 
 The system provides default Mustache templates for different API item types:
@@ -39,13 +163,47 @@ The system provides default Mustache templates for different API item types:
 - Related namespace references
 - Assembly information
 
-### 5. Method Template (`method.mustache`)
-**Purpose**: Document individual methods (when generated separately)
+### 5. Link Template (`link.mustache`) **[REQUIRED]**
+**Purpose**: Format individual cross-reference links
 **Features**:
-- Method signature and parameters
-- Return value documentation
-- Exception documentation
-- Usage examples
+- Platform-specific link formatting
+- Internal vs. external link handling
+- Anchor link support for combined members
+
+**Example - Basic Markdown** (`templates/basic/link.mustache`):
+```mustache
+[{{displayName}}]({{relativePath}})
+```
+
+**Example - MDX with Components** (`templates/mdx/link.mustache`):
+```mustache
+<ApiLink href="{{relativePath}}">{{displayName}}</ApiLink>
+```
+
+**Example - HTML Output** (`templates/html/link.mustache`):
+```mustache
+<a href="{{relativePath}}" class="api-link">{{displayName}}</a>
+```
+
+**Link Data Structure**:
+```json
+{
+  "uid": "SadConsole.ColoredGlyph",
+  "displayName": "ColoredGlyph",
+  "relativePath": "../../ColoredGlyph.md",
+  "anchor": "foreground",
+  "isExternal": false,
+  "externalUrl": null
+}
+```
+
+### 6. Member Template (`member.mustache`)
+**Purpose**: Document individual members (when `combineMembers=false`)
+**Features**:
+- Property documentation
+- Method documentation
+- Event and field documentation
+- Standalone member pages
 
 ## Template Variables
 

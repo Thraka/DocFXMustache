@@ -148,6 +148,9 @@ Controls template processing and customization:
   "templates": {
     "defaultTemplateSet": "standard",   // Built-in template set to use
     "customTemplateDirectory": null,    // Override template directory
+    "combineMembers": true,             // Combine members with parent type (vs. separate files)
+    "generateIndexFiles": true,         // Generate namespace/assembly index files
+    "includeInheritedMembers": false,   // Include inherited members in documentation
     "partialDirectories": [             // Additional partial directories
       "./templates/partials"
     ],
@@ -157,11 +160,18 @@ Controls template processing and customization:
     "templateExtensions": {             // Template file extensions
       "class": ".mustache",
       "interface": ".mustache",
-      "enum": ".mustache"
+      "enum": ".mustache",
+      "link": ".mustache"               // Required: Link formatting template
     }
   }
 }
 ```
+
+**Template Organization Modes:**
+- `combineMembers: true` - All members on parent type page with anchors (e.g., `ColoredGlyph.md#foreground`)
+- `combineMembers: false` - Each member gets own file (e.g., `ColoredGlyph.Foreground.md`)
+
+See [Template Documentation](../implementation/templates.md#template-organization-modes) for details.
 
 ### Processing Configuration
 Controls what content is included and how it's processed:
