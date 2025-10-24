@@ -13,7 +13,8 @@ public class MetadataParsingServiceTests : IDisposable
 
     public MetadataParsingServiceTests()
     {
-        _service = new MetadataParsingService();
+        var logger = LoggerHelper.CreateNullLogger<MetadataParsingService>();
+        _service = new MetadataParsingService(logger);
     }
 
     #region ParseYamlFileAsync Tests

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VYaml.Serialization;
 using DocFXMustache.Models.Yaml;
+using Microsoft.Extensions.Logging;
 
 namespace DocFXMustache.Services;
 
@@ -13,6 +14,17 @@ namespace DocFXMustache.Services;
 /// </summary>
 public class MetadataParsingService
 {
+    private readonly ILogger<MetadataParsingService> _logger;
+
+    /// <summary>
+    /// Initializes a new instance of MetadataParsingService
+    /// </summary>
+    /// <param name="logger">Logger instance for structured logging</param>
+    public MetadataParsingService(ILogger<MetadataParsingService> logger)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
     /// <summary>
     /// Parses a single YAML metadata file into a Root object
     /// </summary>
@@ -26,18 +38,27 @@ public class MetadataParsingService
         if (!File.Exists(filePath))
             throw new FileNotFoundException($"YAML file not found: {filePath}");
 
+        _logger.LogDebug("Parsing YAML file: {FilePath}", filePath);
+
         try
         {
             using var stream = File.OpenRead(filePath);
             var root = await YamlSerializer.DeserializeAsync<Root>(stream);
             
             if (root == null)
+            {
+                _logger.LogError("Failed to deserialize YAML file: {FilePath}", filePath);
                 throw new InvalidOperationException($"Failed to deserialize YAML file: {filePath}");
+            }
+
+            var itemCount = root.Items?.Count() ?? 0;
+            _logger.LogDebug("Successfully parsed {FilePath} with {ItemCount} items", filePath, itemCount);
 
             return root;
         }
         catch (Exception ex) when (!(ex is ArgumentException || ex is FileNotFoundException))
         {
+            _logger.LogError(ex, "Error parsing YAML file: {FilePath}", filePath);
             throw new InvalidOperationException($"Error parsing YAML file '{filePath}': {ex.Message}", ex);
         }
     }
@@ -57,7 +78,11 @@ public class MetadataParsingService
             throw new DirectoryNotFoundException($"Directory not found: {directoryPath}");
 
         var yamlFiles = Directory.GetFiles(directoryPath, searchPattern, SearchOption.AllDirectories);
+        _logger.LogInformation("Found {FileCount} YAML files in {Directory}", yamlFiles.Length, directoryPath);
+        
         var results = new List<Root>();
+        var successCount = 0;
+        var failureCount = 0;
 
         foreach (var filePath in yamlFiles)
         {
@@ -65,13 +90,17 @@ public class MetadataParsingService
             {
                 var root = await ParseYamlFileAsync(filePath);
                 results.Add(root);
+                successCount++;
             }
             catch (Exception ex)
             {
-                // Log the error but continue processing other files
-                Console.WriteLine($"Warning: Failed to parse {filePath}: {ex.Message}");
+                _logger.LogWarning(ex, "Failed to parse {FilePath}", filePath);
+                failureCount++;
             }
         }
+
+        _logger.LogInformation("Parsing completed: {SuccessCount} succeeded, {FailureCount} failed", 
+            successCount, failureCount);
 
         return results;
     }
@@ -84,22 +113,35 @@ public class MetadataParsingService
     public bool ValidateMetadata(Root metadata)
     {
         if (metadata == null)
+        {
+            _logger.LogWarning("Metadata validation failed: metadata is null");
             return false;
+        }
 
         // Check that we have items
         if (metadata.Items == null || !metadata.Items.Any())
+        {
+            _logger.LogWarning("Metadata validation failed: no items found");
             return false;
+        }
 
         // Validate each item has required properties
         foreach (var item in metadata.Items)
         {
             if (string.IsNullOrEmpty(item.Uid))
+            {
+                _logger.LogWarning("Metadata validation failed: item missing UID");
                 return false;
+            }
                 
             if (string.IsNullOrEmpty(item.Name))
+            {
+                _logger.LogWarning("Metadata validation failed: item {Uid} missing name", item.Uid);
                 return false;
+            }
         }
 
+        _logger.LogDebug("Metadata validated successfully with {ItemCount} items", metadata.Items.Count());
         return true;
     }
 
@@ -117,6 +159,9 @@ public class MetadataParsingService
         if (!Directory.Exists(directoryPath))
             throw new DirectoryNotFoundException($"Directory not found: {directoryPath}");
 
-        return Directory.GetFiles(directoryPath, searchPattern, SearchOption.AllDirectories);
+        var files = Directory.GetFiles(directoryPath, searchPattern, SearchOption.AllDirectories);
+        _logger.LogDebug("Found {FileCount} YAML files in {Directory}", files.Length, directoryPath);
+        
+        return files;
     }
 }

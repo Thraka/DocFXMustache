@@ -14,7 +14,8 @@ public class ItemTypeTests
 
     public ItemTypeTests()
     {
-        _parsingService = new MetadataParsingService();
+        var logger = LoggerHelper.CreateNullLogger<MetadataParsingService>();
+        _parsingService = new MetadataParsingService(logger);
     }
 
     #region Type Conversion Tests

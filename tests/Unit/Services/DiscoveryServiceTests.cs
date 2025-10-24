@@ -14,8 +14,10 @@ public class DiscoveryServiceTests : IDisposable
 
     public DiscoveryServiceTests()
     {
-        _parsingService = new MetadataParsingService();
-        _discoveryService = new DiscoveryService(_parsingService);
+        var parsingLogger = LoggerHelper.CreateNullLogger<MetadataParsingService>();
+        var discoveryLogger = LoggerHelper.CreateNullLogger<DiscoveryService>();
+        _parsingService = new MetadataParsingService(parsingLogger);
+        _discoveryService = new DiscoveryService(_parsingService, discoveryLogger);
     }
 
     #region BuildUidMappingsAsync Tests

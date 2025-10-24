@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DocFXMustache.Models;
 using DocFXMustache.Models.Yaml;
+using Microsoft.Extensions.Logging;
 
 namespace DocFXMustache.Services;
 
@@ -14,10 +15,12 @@ namespace DocFXMustache.Services;
 public class DiscoveryService
 {
     private readonly MetadataParsingService _parsingService;
+    private readonly ILogger<DiscoveryService> _logger;
 
-    public DiscoveryService(MetadataParsingService parsingService)
+    public DiscoveryService(MetadataParsingService parsingService, ILogger<DiscoveryService> logger)
     {
         _parsingService = parsingService ?? throw new ArgumentNullException(nameof(parsingService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /// <summary>
@@ -35,20 +38,36 @@ public class DiscoveryService
         if (!Directory.Exists(inputDirectory))
             throw new DirectoryNotFoundException($"Input directory not found: {inputDirectory}");
 
+        _logger.LogInformation("Starting UID discovery in {Directory} with {GroupingStrategy} grouping and {CaseControl} case", 
+            inputDirectory, groupingStrategy, caseControl);
+
         var mappings = new UidMappings();
         var rootObjects = await _parsingService.ParseDirectoryAsync(inputDirectory);
+
+        var processedCount = 0;
+        var skippedCount = 0;
 
         foreach (var root in rootObjects)
         {
             if (!_parsingService.ValidateMetadata(root))
             {
-                Console.WriteLine($"Warning: Skipping invalid metadata");
+                _logger.LogWarning("Skipping invalid metadata");
+                skippedCount++;
                 continue;
             }
 
             ProcessRootObject(root, mappings, groupingStrategy, caseControl);
+            processedCount++;
         }
 
+        _logger.LogInformation(
+            "Discovery completed: {TotalUids} UIDs found across {AssemblyCount} assemblies and {NamespaceCount} namespaces ({ProcessedCount} processed, {SkippedCount} skipped)",
+            mappings.TotalUids, 
+            mappings.Assemblies.Count(), 
+            mappings.Namespaces.Count(),
+            processedCount,
+            skippedCount);
+        
         Console.WriteLine($"Discovery completed: {mappings.TotalUids} UIDs found across {mappings.Assemblies.Count()} assemblies and {mappings.Namespaces.Count()} namespaces");
         
         return mappings;
@@ -59,10 +78,15 @@ public class DiscoveryService
     /// </summary>
     private void ProcessRootObject(Root root, UidMappings mappings, string groupingStrategy, string caseControl)
     {
+        var itemsProcessed = 0;
+        
         foreach (var item in root.Items)
         {
             if (string.IsNullOrEmpty(item.Uid))
+            {
+                _logger.LogDebug("Skipping item without UID");
                 continue;
+            }
 
             // Store the item for later reference
             mappings.UidToItem[item.Uid] = item;
@@ -70,6 +94,8 @@ public class DiscoveryService
             // Determine output path based on grouping strategy
             var outputPath = DetermineOutputPath(item, groupingStrategy, caseControl);
             mappings.UidToFilePath[item.Uid] = outputPath;
+            
+            _logger.LogDebug("Mapped UID {Uid} to {OutputPath}", item.Uid, outputPath);
 
             // Track assemblies
             if (item.Assemblies != null)
@@ -88,7 +114,11 @@ public class DiscoveryService
             {
                 mappings.NamespaceMappings.TryAdd(item.Namespace, GetNamespaceOutputDirectory(item.Namespace, groupingStrategy));
             }
+            
+            itemsProcessed++;
         }
+        
+        _logger.LogDebug("Processed {ItemCount} items from root object", itemsProcessed);
     }
 
     /// <summary>

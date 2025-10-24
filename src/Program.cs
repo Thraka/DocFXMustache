@@ -1,5 +1,6 @@
 ﻿using System.CommandLine;
 using DocFXMustache.Services;
+using Microsoft.Extensions.Logging;
 
 namespace DocFXMustache;
 
@@ -177,17 +178,33 @@ class Program
             Console.WriteLine($"Scanning for YAML files in: {input.FullName}");
         }
 
+        // Initialize logging
+        using var loggerFactory = Services.LoggerFactory.Create(verbose);
+        var parsingLogger = loggerFactory.CreateLogger<MetadataParsingService>();
+        var discoveryLogger = loggerFactory.CreateLogger<DiscoveryService>();
+        var programLogger = loggerFactory.CreateLogger<Program>();
+
+        programLogger.LogInformation("DocFX Mustache - Starting processing");
+        programLogger.LogInformation("Input: {InputDirectory}", input.FullName);
+        programLogger.LogInformation("Output: {OutputDirectory}", output.FullName);
+        programLogger.LogInformation("Template: {TemplateDirectory}", template.FullName);
+        programLogger.LogInformation("Format: {Format}, Grouping: {Grouping}, Case: {Case}", 
+            format, grouping, caseControl);
+
         // Initialize services
-        var parsingService = new MetadataParsingService();
-        var discoveryService = new DiscoveryService(parsingService);
+        var parsingService = new MetadataParsingService(parsingLogger);
+        var discoveryService = new DiscoveryService(parsingService, discoveryLogger);
 
         try
         {
             // Phase 2 - Pass 1: Discovery
+            programLogger.LogInformation("Starting Phase 2 - Pass 1: Discovery");
             Console.WriteLine("\n🔍 Phase 2 - Pass 1: Discovery");
             Console.WriteLine("Building UID mappings and file structure...");
             
             var uidMappings = await discoveryService.BuildUidMappingsAsync(input.FullName, grouping, caseControl);
+            
+            programLogger.LogInformation("Discovery phase completed successfully");
             
             if (verbose)
             {
@@ -199,6 +216,7 @@ class Program
 
             if (dryRun)
             {
+                programLogger.LogInformation("Dry run mode - showing planned output structure");
                 Console.WriteLine("\n📋 Dry Run - Planned Output Structure:");
                 foreach (var mapping in uidMappings.UidToFilePath.Take(10)) // Show first 10
                 {
@@ -211,6 +229,7 @@ class Program
             }
             else
             {
+                programLogger.LogInformation("Phase 3 not yet implemented - generation phase pending");
                 Console.WriteLine("\n📝 Phase 2 - Pass 2: Generation");
                 Console.WriteLine("(Not yet implemented - Phase 3 coming next)");
                 
@@ -222,6 +241,7 @@ class Program
         }
         catch (Exception ex)
         {
+            programLogger.LogError(ex, "Error during processing");
             Console.Error.WriteLine($"❌ Error during processing: {ex.Message}");
             if (verbose)
             {
@@ -230,6 +250,7 @@ class Program
             Environment.Exit(1);
         }
 
+        programLogger.LogInformation("Processing completed successfully");
         Console.WriteLine("\n✅ Command line parsing completed successfully!");
         Console.WriteLine("📝 Ready to implement core processing logic...");
 
