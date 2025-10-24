@@ -61,20 +61,32 @@ Transform DocFX generated .NET API metadata files (YAML format) into customizabl
   - Respects `--verbose` flag (Debug vs Information level)
   - 12/12 logging tests passing
 
-### Phase 3: Link Resolution & Template Engine (0% Complete)
-**Next Priority**: Implement two-pass generation pipeline
-- [ ] Link processing system → [Link Processing Architecture](docs/architecture/link-processing.md)
+### Phase 3: Link Resolution & Template Engine (60% Complete) 🚧
+**Current Status**: Core link processing implemented and tested
+- [x] **Link processing system** → [Link Processing Architecture](docs/architecture/link-processing.md) ✅ (Oct 24, 2025)
   - **Architecture**: Two-pass process with `link.mustache` template
   - **Pass 1**: TemplateProcessingService renders files with `<xref>` preserved, builds UID mappings
   - **Pass 2**: XrefProcessingService resolves `<xref>` tags using Pass 1 mappings, renders through `link.mustache`
   - Templates control both content structure (Pass 1) and link format (Pass 2)
+- [x] **LinkResolutionService** - Record generated files in Pass 1, resolve links in Pass 2 ✅ (Oct 24, 2025)
+  - UID-to-path mapping with anchor support
+  - Relative path calculation (same dir, parent, deep navigation)
+  - External reference detection (System.*, Microsoft.*)
+  - External link resolution to Microsoft Docs URLs
+  - 19 tests passing
+- [x] **XrefProcessingService** - Parse `<xref>` tags, resolve UIDs, render using `link.mustache` (Pass 2) ✅ (Oct 24, 2025)
+  - Regex-based xref tag extraction
+  - UID resolution using LinkResolutionService
+  - Display name extraction from UIDs
+  - Stubble.Core integration for template rendering
+  - 17 tests passing
+- [x] **Data Models** - LinkInfo, OutputFileInfo ✅ (Oct 24, 2025)
+- [x] **link.mustache template** - Basic markdown link format ✅ (Oct 24, 2025)
 - [ ] Template customization → [Template Implementation](docs/implementation/templates.md)
-- [ ] LinkResolutionService - Record generated files in Pass 1, resolve links in Pass 2
-- [ ] XrefProcessingService - Parse `<xref>` tags, resolve UIDs, render using `link.mustache` (Pass 2)
 - [ ] TemplateProcessingService - Integrate Stubble.Core Mustache rendering (Pass 1)
 - [ ] FileGenerationService - Handle file I/O and directory creation
 - [ ] DocumentationGenerator - Orchestrate two-pass workflow (Pass 1: render templates → Pass 2: resolve XRefs)
-- [ ] Default templates for each API item type (class, interface, enum, method) + `link.mustache`
+- [ ] Default templates for each API item type (class, interface, enum, method)
 
 ### Phase 4: File Generation & Output (0% Complete)
 - [ ] .md and .mdx output format support
@@ -83,13 +95,17 @@ Transform DocFX generated .NET API metadata files (YAML format) into customizabl
 - [ ] Dry-run and overwrite protection
 - [ ] Error handling for missing UIDs in Pass 2
 
-### Phase 5: Testing & Polish (0% Complete)
-- [x] Unit tests for core services and models (59 tests)
+### Phase 5: Testing & Polish (30% Complete) 🚧
+- [x] Unit tests for core services and models (107 tests total) ✅ (Oct 24, 2025)
+  - 19 LinkResolutionService tests
+  - 17 XrefProcessingService tests
+  - 59 existing tests (models, discovery, parsing, logging)
+- [x] **Link resolution tests** using real YAML fixtures ✅ (Oct 24, 2025)
 - [ ] Comprehensive testing suite → [Testing Strategy](docs/development/testing-strategy.md)
   - [ ] Integration tests for end-to-end workflows
   - [ ] Performance tests for large documentation sets
   - [ ] Template processing tests
-  - [ ] Link resolution tests
+  - [ ] Grouping strategy integration tests
 - [ ] Documentation and examples → [Usage Examples](docs/development/usage-examples.md)
 - [ ] Performance optimization
 - [ ] User experience improvements
@@ -142,22 +158,29 @@ This project plan is organized into focused documents for better maintainability
 
 ## Quick Start for LLM Implementation
 
-**🚀 What's Next?** Phase 1 & 2 are 100% complete! Ready to start Phase 3 implementation:
+**🚀 What's Next?** Phases 1, 2, and core link processing complete! Ready to finish Phase 3:
 
 1. **✅ Phase 1 & 2 Complete!** (October 24, 2025)
    - ✅ CLI framework with all options working
    - ✅ `--case` CLI option for filename casing control
    - ✅ UID discovery validated with 4,075 UIDs from reference files
    - ✅ Logging infrastructure fully integrated
-   - ✅ All 71 tests passing (59 unit tests + 12 logging tests)
 
-2. **Phase 3 Implementation** (**READY TO START NOW** 🎯):
-   - XrefProcessingService → TemplateProcessingService → DocumentationGenerator
-   - FileGenerationService for robust output
-   - Default Mustache templates
+2. **✅ Phase 3 - Link Processing Complete!** (October 24, 2025)
+   - ✅ LinkResolutionService with UID mapping and path resolution
+   - ✅ XrefProcessingService with regex parsing and template rendering
+   - ✅ Data models (LinkInfo, OutputFileInfo)
+   - ✅ link.mustache template for markdown links
+   - ✅ 107 tests passing (added 36 link processing tests)
+
+3. **Phase 3 - Remaining Tasks** (**NEXT** 🎯):
+   - TemplateProcessingService for Pass 1 (render templates with xrefs preserved)
+   - FileGenerationService for file I/O
+   - DocumentationGenerator to orchestrate two-pass workflow
+   - Default templates for classes, interfaces, enums, methods
    - Integration with Program.cs
 
-**Current Status**: Phases 1 & 2 at 100% complete! ✅ All prerequisites met. UID discovery working with 4,075+ UIDs mapped. Logging infrastructure operational. Ready for Phase 3: Template Engine & Link Resolution.
+**Current Status**: Phases 1 & 2 at 100%, Phase 3 at 60% complete! ✅ Link processing core implemented with 107 tests passing. Ready to build template rendering and file generation.
 
 ### 🎯 **AI Collaboration Quick Reference**
 **Working on Templates?** → [Template Implementation](docs/implementation/templates.md) + [Core Architecture](docs/architecture/core-architecture.md)  
@@ -171,4 +194,4 @@ See individual documentation files for detailed information on architecture, imp
 
 ---
 
-*Last updated: October 24, 2025 - **Phase 1 & 2 at 100% complete** ✅ (Logging infrastructure, reference file testing with 4,075 UIDs validated, all 71 tests passing), **Phase 3 ready to begin***
+*Last updated: October 24, 2025 - **Phases 1 & 2 at 100%, Phase 3 at 60% complete** ✅ (Link processing services implemented: LinkResolutionService + XrefProcessingService with 107 tests passing)*

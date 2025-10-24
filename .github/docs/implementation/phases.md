@@ -54,28 +54,48 @@
 ## Phase 3: Link Resolution & Template Engine (Week 3)
 **Goal**: Implement Pass 2 processing with link resolution and template rendering
 
+**Status**: 60% Complete ✅ (Oct 24, 2025)
+
 ### Tasks
-- [ ] **Implement UidMappings class for Pass 1 results**
-- [ ] **Create XRef processing with pre-built mappings for Pass 2**
-- [ ] Integrate Stubble.Core Mustache engine
+- [x] **Implement LinkResolutionService for Pass 1 & 2** ✅ (Oct 24, 2025)
+  - Record generated files with UID-to-path mapping
+  - Support anchor fragments for member links
+  - Calculate relative paths between files
+  - Detect external references (System.*, Microsoft.*)
+  - Resolve external links to Microsoft Docs URLs
+  - 19 unit tests passing
+- [x] **Implement XrefProcessingService for Pass 2** ✅ (Oct 24, 2025)
+  - Extract UIDs from xref tags using regex
+  - Resolve UIDs using LinkResolutionService
+  - Create LinkInfo objects for template rendering
+  - Extract display names from UIDs
+  - Integrate Stubble.Core for Mustache rendering
+  - 17 unit tests passing
+- [x] **Create data models** ✅ (Oct 24, 2025)
+  - LinkInfo - Template rendering model
+  - OutputFileInfo - File path with optional anchor
+- [x] **Create link.mustache template** ✅ (Oct 24, 2025)
+  - Basic markdown link format: `[{{displayName}}]({{relativePath}})`
+- [ ] Integrate Stubble.Core Mustache engine for main templates
 - [ ] Create default templates for each API item type
 - [ ] Implement template resolution logic
 - [ ] **Add structured link data helpers for templates**
 - [ ] **Implement two-pass DocumentationGenerator workflow**
 
 ### Deliverables
-- Link resolution service
-- XRef processing system
-- Template engine integration
-- Default template set
-- Two-pass workflow orchestrator
+- [x] Link resolution service ✅
+- [x] XRef processing system ✅
+- [ ] Template engine integration
+- [ ] Default template set
+- [ ] Two-pass workflow orchestrator
 
 ### Key Components
-- `XrefProcessingService`
-- `TemplateEngine` wrapper
-- `LinkResolutionService`
-- `DocumentationGenerator`
-- Default Mustache templates
+- [x] `XrefProcessingService` ✅
+- [ ] `TemplateEngine` wrapper
+- [x] `LinkResolutionService` ✅
+- [ ] `DocumentationGenerator`
+- [x] Default link.mustache template ✅
+- [ ] Default content templates (class, interface, enum, method)
 
 ## Phase 4: File Generation & Output (Week 4)
 **Goal**: Complete the generation pipeline with file output and validation

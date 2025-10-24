@@ -58,71 +58,7 @@ During the metadata parsing phase, the system builds a comprehensive UID-to-file
   - `SadConsole.ColoredGlyph.Foreground` → `ColoredGlyph.md#foreground` (anchor link)
   - `SadConsole.ColoredGlyph.Clone()` → `ColoredGlyph.md#clone` (anchor link)
 
-**UID Mapping Creation:**
-```csharp
-public class UidResolver
-{
-    private readonly Dictionary<string, OutputFileInfo> _uidToFileMap;
-    private readonly IFileOrganizationStrategy _organizationStrategy;
-    private readonly TemplateConfiguration _templateConfig;
-    
-    public void BuildUidMappings(IEnumerable<Item> items)
-    {
-        foreach (var item in items)
-        {
-            // Determine output location based on template configuration
-            var outputLocation = DetermineOutputLocation(item);
-            
-            _uidToFileMap[item.Uid] = outputLocation;
-            
-            // If template combines members with parent type, map members to parent file
-            if (_templateConfig.CombineMembersWithType)
-            {
-                foreach (var child in item.Children ?? Enumerable.Empty<string>())
-                {
-                    var childItem = FindItemByUid(child);
-                    if (childItem != null && IsMember(childItem))
-                    {
-                        // Member UIDs point to parent file with anchor
-                        _uidToFileMap[child] = new OutputFileInfo
-                        {
-                            FilePath = outputLocation.FilePath,
-                            Anchor = GenerateAnchor(childItem.Name)
-                        };
-                    }
-                }
-            }
-        }
-    }
-    
-    public string ResolveUidToRelativePath(string fromFilePath, string targetUid)
-    {
-        var targetInfo = _uidToFileMap[targetUid];
-        var relativePath = CalculateRelativePath(fromFilePath, targetInfo.FilePath);
-        
-        // Add anchor if member is on parent type page
-        if (!string.IsNullOrEmpty(targetInfo.Anchor))
-        {
-            relativePath += $"#{targetInfo.Anchor}";
-        }
-        
-        return relativePath;
-    }
-}
-
-public class OutputFileInfo
-{
-    public string FilePath { get; set; }      // e.g., "output/SadConsole/ColoredGlyph.md"
-    public string Anchor { get; set; }        // e.g., "foreground" (optional, for members)
-}
-
-public class TemplateConfiguration
-{
-    public bool CombineMembersWithType { get; set; }  // true = methods/props in type file
-    public bool GenerateIndexFiles { get; set; }
-    public bool IncludeInheritedMembers { get; set; }
-}
-```
+**Implementation:** See `src/Services/LinkResolutionService.cs` and `src/Models/OutputFileInfo.cs` for the actual implementation of UID-to-file mapping.
 
 #### 2. Context-Aware Path Resolution
 The link resolver must consider the context (current file location) when generating relative paths:
@@ -285,235 +221,99 @@ Relative path: "../../ColoredGlyph.md"
 
 ## Implementation Components
 
+The link processing system is implemented across several service classes and models:
+
 ### 1. Link Resolution Service (Pass 1 & 2)
-```csharp
-public class LinkResolutionService
-{
-    private readonly Dictionary<string, OutputFileInfo> _uidToFileMap;
-    
-    // PASS 1: Build UID mappings from generated output
-    public void RecordGeneratedFile(string uid, string filePath, string anchor = null)
-    {
-        _uidToFileMap[uid] = new OutputFileInfo 
-        { 
-            FilePath = filePath, 
-            Anchor = anchor 
-        };
-    }
-    
-    // PASS 2: Resolve links using recorded mappings
-    public string ResolveInternalLink(string fromPath, string targetUid);
-    public string ResolveExternalLink(string uid, string fallbackUrl);
-    public bool IsExternalReference(string uid);
-    public OutputFileInfo GetOutputInfo(string uid);
-}
+**Implementation:** `src/Services/LinkResolutionService.cs`
 
-public class OutputFileInfo
-{
-    public string FilePath { get; set; }      // Full path to output file
-    public string Anchor { get; set; }        // Optional anchor for members (e.g., "#foreground")
-}
+**Key Responsibilities:**
+- **Pass 1**: Records generated file paths and external YAML references
+  - `RecordGeneratedFile()` - Stores UID-to-file mappings for generated documentation
+  - `RecordExternalReference()` - Stores href values from YAML reference sections
+- **Pass 2**: Resolves links using priority-based logic
+  - `IsExternalReference()` - Checks if UID was generated (internal) or not (external)
+  - `ResolveInternalLink()` - Calculates relative paths between files
+  - `ResolveExternalLink()` - Returns YAML href or generates fallback URL
+  - `CalculateRelativePath()` - Path calculation utility
 
-public class TemplateConfiguration
-{
-    public bool CombineMembersWithType { get; set; }  // Combine methods/props with parent type
-    public bool GenerateIndexFiles { get; set; }       // Generate namespace/assembly index files
-    public bool IncludeInheritedMembers { get; set; }  // Include inherited members in output
-}
-```
+**Data Models:** `src/Models/OutputFileInfo.cs`
 
 ### 2. XRef Processing Service (Pass 2 Only)
-```csharp
-public class XrefProcessingService
-{
-    private static readonly Regex XrefPattern = new Regex(
-        @"<xref\s+href=""([^""]+)""[^>]*></xref>", 
-        RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    
-    private readonly LinkResolutionService _linkResolver;
-    private readonly IStubbleRenderer _renderer;
-    private readonly string _linkTemplate;
-    
-    public XrefProcessingService(LinkResolutionService linkResolver, string templateDirectory)
-    {
-        _linkResolver = linkResolver;
-        _renderer = new StubbleBuilder().Build();
-        _linkTemplate = File.ReadAllText(Path.Combine(templateDirectory, "link.mustache"));
-    }
-    
-    /// <summary>
-    /// PASS 2: Processes xref tags in generated files.
-    /// Resolves UIDs using Pass 1 mappings and renders through link.mustache template.
-    /// Returns content with all xrefs replaced by formatted links.
-    /// </summary>
-    public string ProcessXrefs(string content, string currentFilePath)
-    {
-        return XrefPattern.Replace(content, match => 
-        {
-            var uid = match.Groups[1].Value;
-            
-            // Resolve using Pass 1 mappings
-            var linkInfo = CreateLinkInfo(uid, currentFilePath);
-            
-            // Render through link.mustache template
-            return RenderLink(linkInfo);
-        });
-    }
-    
-    public LinkInfo CreateLinkInfo(string uid, string currentFilePath)
-    {
-        var isExternal = _linkResolver.IsExternalReference(uid);
-        
-        if (isExternal)
-        {
-            return new LinkInfo 
-            { 
-                Uid = uid, 
-                DisplayName = ExtractDisplayName(uid), 
-                RelativePath = _linkResolver.ResolveExternalLink(uid, null),
-                IsExternal = true
-            };
-        }
-        
-        // Get output info from Pass 1
-        var outputInfo = _linkResolver.GetOutputInfo(uid);
-        var relativePath = CalculateRelativePath(currentFilePath, outputInfo.FilePath);
-        
-        if (!string.IsNullOrEmpty(outputInfo.Anchor))
-        {
-            relativePath += $"#{outputInfo.Anchor}";
-        }
-        
-        return new LinkInfo 
-        { 
-            Uid = uid, 
-            DisplayName = ExtractDisplayName(uid), 
-            RelativePath = relativePath,
-            IsExternal = false
-        };
-    }
-    
-    public string RenderLink(LinkInfo linkInfo)
-    {
-        // Render using link.mustache template
-        return _renderer.Render(_linkTemplate, linkInfo);
-    }
-    
-    private string ExtractDisplayName(string uid)
-    {
-        var lastDot = uid.LastIndexOf('.');
-        return lastDot >= 0 ? uid.Substring(lastDot + 1) : uid;
-    }
-    
-    private string CalculateRelativePath(string fromPath, string toPath)
-    {
-        // Calculate relative path between two file paths
-        // Implementation details...
-    }
-}
-```
+**Implementation:** `src/Services/XrefProcessingService.cs`
+
+**Key Responsibilities:**
+- Extracts `<xref>` tags from generated markdown using regex
+- Resolves UIDs to `LinkInfo` objects using `LinkResolutionService`
+- Renders links through `link.mustache` template
+- Replaces xref tags with formatted links
+- Generates user-friendly display names from UIDs
+
+**Data Models:** `src/Models/LinkInfo.cs`
 
 ### 3. Template Processing Service (Pass 1 Only)
-```csharp
-public class TemplateProcessingService
-{
-    private readonly IStubbleRenderer _renderer;
-    private readonly Dictionary<string, string> _templates;
-    
-    /// <summary>
-    /// PASS 1: Render template with data, preserving XRef tags in output.
-    /// </summary>
-    public string RenderTemplate(string templateName, object data)
-    {
-        var template = _templates[templateName];
-        return _renderer.Render(template, data);
-        // Note: XRef tags in data.Summary, data.Remarks, etc. are preserved
-    }
-}
-```
+**Status:** Not yet implemented
+
+**Planned Responsibilities:**
+- Render Mustache templates with YAML data
+- Preserve `<xref>` tags in output (don't resolve during Pass 1)
+- Support different template packs (basic, starlight, etc.)
 
 ### 4. Documentation Generator (Orchestrates Both Passes)
-```csharp
-public class DocumentationGenerator
-{
-    private readonly TemplateProcessingService _templateService;
-    private readonly XrefProcessingService _xrefService;
-    private readonly LinkResolutionService _linkResolver;
-    private readonly FileGenerationService _fileService;
-    
-    public async Task GenerateDocumentationAsync(
-        IEnumerable<Item> items, 
-        string outputDirectory)
-    {
-        // PASS 1: Generate files with templates, build UID mappings
-        var generatedFiles = new List<string>();
-        
-        foreach (var item in items)
-        {
-            // Render template (XRefs preserved in output)
-            var content = _templateService.RenderTemplate(GetTemplateName(item), item);
-            
-            // Determine output path (template may affect this)
-            var outputPath = DetermineOutputPath(item, outputDirectory);
-            
-            // Write file
-            await _fileService.WriteFileAsync(outputPath, content);
-            generatedFiles.Add(outputPath);
-            
-            // Record in UID mapping
-            _linkResolver.RecordGeneratedFile(item.Uid, outputPath);
-            
-            // If members are on same page, record anchor mappings
-            if (ShouldCombineMembers(item))
-            {
-                foreach (var childUid in item.Children ?? Enumerable.Empty<string>())
-                {
-                    var anchor = GenerateAnchor(childUid);
-                    _linkResolver.RecordGeneratedFile(childUid, outputPath, anchor);
-                }
-            }
-        }
-        
-        // PASS 2: Process XRefs in all generated files
-        foreach (var filePath in generatedFiles)
-        {
-            var content = await _fileService.ReadFileAsync(filePath);
-            var processedContent = _xrefService.ProcessXrefs(content, filePath);
-            await _fileService.WriteFileAsync(filePath, processedContent);
-        }
-    }
-}
-```
+**Status:** Not yet implemented
 
-### 5. Data Models
-```csharp
-public class LinkInfo
-{
-    public string Uid { get; set; }
-    public string DisplayName { get; set; }
-    public string RelativePath { get; set; }
-    public bool IsExternal { get; set; }
-}
+**Planned Workflow:**
+1. **Pass 1**: Render all templates → Write files → Record UID mappings
+2. **Pass 2**: Read files → Process xrefs → Write updated files
 
-public class OutputFileInfo
-{
-    public string FilePath { get; set; }      // Full path to generated file
-    public string Anchor { get; set; }        // Optional anchor (e.g., "foreground" for members)
-}
-```
+**Key Operations:**
+- Determine output paths based on template configuration
+- Record generated files and anchor mappings in `LinkResolutionService`
+- Coordinate between `TemplateProcessingService` and `XrefProcessingService`
 
 ## External References
 
-External references are resolved using DocFX's reference metadata:
+External references are resolved using a **priority-based approach** that leverages the 2-pass architecture:
+
+### Resolution Priority (Pass 2)
+
+1. **Generated Files First (Internal)**: If `RecordGeneratedFile()` was called for a UID in Pass 1, it's internal
+   - Use the generated file path with `ResolveInternalLink()`
+   - Overrides any YAML reference metadata
+
+2. **YAML Reference Metadata (External)**: If UID is in YAML `references` section
+   - Use the `href` value from metadata (absolute URL or relative path)
+   - Example: `System.String` → `https://learn.microsoft.com/dotnet/api/system.string`
+
+3. **Fallback Generation**: For unknown UIDs
+   - `System.*` and `Microsoft.*` → Generate Microsoft Docs URL
+   - Other types → Use provided fallback URL or generate generic URL
+
+### YAML Reference Examples
 
 ```yaml
 references:
+# External type with absolute URL (truly external)
 - uid: System.String
   name: String
   fullName: System.String
   isExternal: true
-  href: https://docs.microsoft.com/dotnet/api/system.string
+  href: https://learn.microsoft.com/dotnet/api/system.string
+
+# Internal type with relative path (will be overridden if we generate it)
+- uid: SadConsole.ColoredGlyph
+  name: ColoredGlyph
+  isExternal: true  # DocFX marks as external, but we generate it
+  href: SadConsole.ColoredGlyph.html  # Our Pass 1 generation overrides this
 ```
+
+### Key Insight: Generated Files Win
+
+If we generate a file for `SadConsole.ColoredGlyph` in Pass 1:
+- **YAML says**: `href: "SadConsole.ColoredGlyph.html"` (external)
+- **We say**: `C:\output\SadConsole\ColoredGlyph.md` (internal)
+- **Result**: Our generated path takes precedence → Internal link
+
+This allows the YAML references to contain relative paths for documentation we might generate, while still using the actual hrefs for truly external types.
 
 ## Cross-Reference Index Generation
 

@@ -36,6 +36,8 @@ Based on DocFX metadata structure and reference models in `.github\reference-fil
 - `ExceptionDocumentation` - Exception documentation
 - `TypeReferenceDocumentation` - Type references and links
 - `Link` - URL and display text for links
+- `LinkInfo` - Template rendering model for resolved links ✅ (Oct 24, 2025)
+- `OutputFileInfo` - File path with optional anchor for members ✅ (Oct 24, 2025)
 - `ItemType` enum - API item types (Class, Interface, Method, etc.)
 
 **YAML Structure Models:**
@@ -47,18 +49,20 @@ Based on DocFX metadata structure and reference models in `.github\reference-fil
 ### 2. Services (`src/Services/`)
 
 **Core Processing Services:**
-- `MetadataParsingService` - Parse YAML metadata files (Pass 1)
-- `DiscoveryService` - Build UID mappings and file organization (Pass 1)
-- `XrefProcessingService` - Process xref tags with UID mappings (Pass 2)
-- `TemplateProcessingService` - Process Mustache templates (Pass 2)
-- `FileGenerationService` - Generate output files (Pass 2)
-- `DocumentationGenerator` - Orchestrate two-pass workflow
+- `MetadataParsingService` - Parse YAML metadata files ✅ (Implemented)
+- `DiscoveryService` - Build UID mappings and file organization ✅ (Implemented)
+- `LinkResolutionService` - Record UIDs (Pass 1) and resolve to paths (Pass 2) ✅ (Oct 24, 2025)
+- `XrefProcessingService` - Process xref tags with UID mappings (Pass 2) ✅ (Oct 24, 2025)
+- `TemplateProcessingService` - Process Mustache templates (Pass 1 & 2) ⏳ (Planned)
+- `FileGenerationService` - Generate output files (Pass 2) ⏳ (Planned)
+- `DocumentationGenerator` - Orchestrate two-pass workflow ⏳ (Planned)
 
 **Supporting Services:**
 - `FileGroupingService` - Handle different grouping strategies
 - `AssemblyDetectionService` - Extract assembly information from metadata
-- `LinkValidationService` - Validate links after Pass 1 discovery
+- `LinkValidationService` - Validate links after Pass 1 discovery ⏳ (Planned)
 - `ConfigurationService` - Handle application configuration
+- `LoggerFactory` - Structured logging with console output ✅ (Implemented)
 
 ### 3. Template Engine (`src/Templating/`)
 - `TemplateEngine` - Wrapper around Stubble.Core
