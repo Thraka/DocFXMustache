@@ -8,6 +8,39 @@ DocFX metadata files contain two types of links:
 1. **Internal Links**: References to types/members within the same documentation set (identified by UID)
 2. **External Links**: References to external documentation (e.g., Microsoft docs, NuGet packages)
 
+## Two-Pass Processing Strategy
+
+The system uses a **two-pass approach** to handle the complexity of link resolution when template decisions affect file organization:
+
+### Pass 1: Template Rendering with Raw XRefs
+1. **Generate all documentation files** from Mustache templates
+2. **Preserve `<xref>` tags** in generated content (don't resolve yet)
+3. **Build UID-to-file mapping** based on *actual generated output*
+   - Record which UIDs got their own files
+   - Record which UIDs are anchors on parent pages
+   - Capture actual file paths and anchor names
+
+**Why Keep XRefs in Pass 1?**
+- Templates control file organization (separate vs. combined pages)
+- Can't know final paths until templates execute
+- UID mapping reflects reality, not assumptions
+
+### Pass 2: XRef Resolution & Link Rendering
+1. **Read generated files** from Pass 1
+2. **Process each `<xref>` tag**:
+   - Extract target UID
+   - Resolve using UID-to-file mapping from Pass 1
+   - Create `LinkInfo` object with resolved path/anchor
+   - **Render through `link.mustache` template**
+   - Replace `<xref>` tag with rendered link
+3. **Write updated files** with resolved links
+
+**Benefits:**
+- Accurate link resolution based on actual output structure
+- Template controls link formatting via `link.mustache`
+- Handles both separate and combined page strategies
+- External links resolved consistently
+
 ## UID-Based Link Resolution
 
 ### Link Resolution Process
@@ -114,14 +147,17 @@ The link resolver must consider the context (current file location) when generat
 
 ## XRef Tag Processing
 
-### Link Template Approach (Chosen Implementation)
-The system uses a dedicated **`link.mustache` template** to format individual links. XrefProcessingService resolves UIDs and processes each link through the link template, then injects the rendered links back into the content.
+### Link Template Approach (Two-Pass Implementation)
+The system uses a **two-pass process** combined with a dedicated **`link.mustache` template** for link formatting.
 
-**Design Principle**: XrefProcessingService resolves UIDs to paths and creates `LinkInfo` data objects, but **delegates link formatting to `link.mustache`**. This keeps the service platform-agnostic while giving templates full control over link rendering.
+**Design Principle**: 
+- **Pass 1**: Templates render content with `<xref>` tags preserved, building accurate UID mappings
+- **Pass 2**: XrefProcessingService resolves UIDs using actual output paths, renders through `link.mustache`
 
-**Processing Flow:**
+**Complete Processing Flow:**
 ```
-Raw YAML → Extract xref → Resolve UID → Create LinkInfo → Render link.mustache → Inject into content
+Pass 1: YAML → Mustache Template → Generated File (with <xref> tags) → Update UID Mapping
+Pass 2: Read File → Extract <xref> → Resolve UID → Create LinkInfo → Render link.mustache → Write File
 ```
 
 **Raw YAML Content:**
@@ -129,30 +165,51 @@ Raw YAML → Extract xref → Resolve UID → Create LinkInfo → Render link.mu
 summary: "Based on the <xref href=\"SadConsole.Ansi.State.Bold\" data-throw-if-not-resolved=\"false\"></xref> property."
 ```
 
-**Step 1: XrefProcessingService extracts and resolves:**
+**Pass 1: Template Rendering (XRefs Preserved)**
+```mustache
+<!-- templates/basic/class.mustache -->
+## Summary
+{{{summary}}}
+```
+
+**Pass 1 Output (ColoredGlyph.md):**
+```markdown
+## Summary
+Based on the <xref href="SadConsole.Ansi.State.Bold" data-throw-if-not-resolved="false"></xref> property.
+```
+
+**Pass 1: UID Mapping Updated**
+```
+SadConsole.Ansi.State.Bold → output/SadConsole/Ansi/State.md#bold
+SadConsole.ColoredGlyph → output/SadConsole/ColoredGlyph.md
+```
+
+**Pass 2: XRef Resolution**
+
+**Step 1: Read generated file, extract xref with UID "SadConsole.Ansi.State.Bold"**
+
+**Step 2: Resolve UID using mapping from Pass 1:**
 ```csharp
-// Found xref tag with UID "SadConsole.Ansi.State.Bold"
 var linkInfo = new LinkInfo 
 {
     Uid = "SadConsole.Ansi.State.Bold",
     DisplayName = "Bold",
-    RelativePath = "../../Bold.md",
+    RelativePath = "Ansi/State.md#bold",  // Resolved from actual Pass 1 output
     IsExternal = false
 };
 ```
 
-**Step 2: Render through `link.mustache`:**
+**Step 3: Render through `link.mustache`:**
 ```mustache
 <!-- templates/basic/link.mustache -->
 [{{displayName}}]({{relativePath}})
 ```
-Result: `[Bold](../../Bold.md)`
+Result: `[Bold](Ansi/State.md#bold)`
 
-**Step 3: Final template data:**
-```json
-{
-  "summary": "Based on the [Bold](../../Bold.md) property."
-}
+**Step 4: Final output (ColoredGlyph.md updated):**
+```markdown
+## Summary
+Based on the [Bold](Ansi/State.md#bold) property.
 ```
 
 ### Link Template Examples
@@ -178,25 +235,31 @@ Different template directories provide different `link.mustache` implementations
 
 ### Main Template Usage
 
-Main templates (e.g., `class.mustache`) receive fully processed content:
+Main templates (e.g., `class.mustache`) render with XRefs intact during Pass 1:
 
 ```mustache
 # {{name}} Class
 
 ## Summary
 {{{summary}}}
-<!-- Triple braces {{{ }}} render unescaped (preserves markdown/HTML) -->
+<!-- Triple braces {{{ }}} render unescaped - preserves <xref> tags in Pass 1 -->
+<!-- XRef tags resolved to links in Pass 2 -->
 
 ## Remarks
 {{{remarks}}}
 ```
 
-### Benefits of This Approach
-1. **Template Control**: Link formatting entirely controlled by `link.mustache`
-2. **Platform-Agnostic Core**: XrefProcessingService has no format-specific logic
-3. **Easy Extensibility**: New output formats only require new `link.mustache`
-4. **Simple Integration**: Main templates just render pre-processed strings
-5. **Testability**: Link rendering can be tested independently
+**Pass 1 renders this as-is with `<xref>` tags preserved.**  
+**Pass 2 replaces `<xref>` tags with rendered links from `link.mustache`.**
+
+### Benefits of Two-Pass + Template Approach
+1. **Accurate Resolution**: UID mappings based on actual generated output, not assumptions
+2. **Template Control**: Link formatting entirely controlled by `link.mustache`
+3. **Flexible Organization**: Templates decide file structure; links resolve correctly regardless
+4. **Platform-Agnostic**: XrefProcessingService has no format-specific logic
+5. **Easy Extensibility**: New output formats only require new `link.mustache`
+6. **Handles Edge Cases**: Anchors, combined pages, relative paths all work correctly
+7. **Testability**: Each pass independently testable
 
 ## File Grouping Impact on Links
 
@@ -222,24 +285,27 @@ Relative path: "../../ColoredGlyph.md"
 
 ## Implementation Components
 
-### 1. Link Resolution Service
+### 1. Link Resolution Service (Pass 1 & 2)
 ```csharp
 public class LinkResolutionService
 {
     private readonly Dictionary<string, OutputFileInfo> _uidToFileMap;
-    private readonly TemplateConfiguration _templateConfig;
     
-    public void BuildUidMappings(IEnumerable<Item> items, TemplateConfiguration config);
+    // PASS 1: Build UID mappings from generated output
+    public void RecordGeneratedFile(string uid, string filePath, string anchor = null)
+    {
+        _uidToFileMap[uid] = new OutputFileInfo 
+        { 
+            FilePath = filePath, 
+            Anchor = anchor 
+        };
+    }
+    
+    // PASS 2: Resolve links using recorded mappings
     public string ResolveInternalLink(string fromPath, string targetUid);
     public string ResolveExternalLink(string uid, string fallbackUrl);
     public bool IsExternalReference(string uid);
-    public ProcessedContent ProcessXrefTags(string content, string currentFilePath);
-    
-    // NEW: Determine if member should be on separate page or parent page
-    private OutputFileInfo DetermineOutputLocation(Item item);
-    
-    // NEW: Generate anchor for members on parent pages
-    private string GenerateAnchor(string memberName);
+    public OutputFileInfo GetOutputInfo(string uid);
 }
 
 public class OutputFileInfo
@@ -256,7 +322,7 @@ public class TemplateConfiguration
 }
 ```
 
-### 2. XRef Processing Service
+### 2. XRef Processing Service (Pass 2 Only)
 ```csharp
 public class XrefProcessingService
 {
@@ -276,7 +342,8 @@ public class XrefProcessingService
     }
     
     /// <summary>
-    /// Processes xref tags by rendering each through link.mustache template.
+    /// PASS 2: Processes xref tags in generated files.
+    /// Resolves UIDs using Pass 1 mappings and renders through link.mustache template.
     /// Returns content with all xrefs replaced by formatted links.
     /// </summary>
     public string ProcessXrefs(string content, string currentFilePath)
@@ -285,7 +352,7 @@ public class XrefProcessingService
         {
             var uid = match.Groups[1].Value;
             
-            // Create link info object
+            // Resolve using Pass 1 mappings
             var linkInfo = CreateLinkInfo(uid, currentFilePath);
             
             // Render through link.mustache template
@@ -295,16 +362,34 @@ public class XrefProcessingService
     
     public LinkInfo CreateLinkInfo(string uid, string currentFilePath)
     {
-        var resolvedPath = _linkResolver.ResolveInternalLink(currentFilePath, uid);
         var isExternal = _linkResolver.IsExternalReference(uid);
+        
+        if (isExternal)
+        {
+            return new LinkInfo 
+            { 
+                Uid = uid, 
+                DisplayName = ExtractDisplayName(uid), 
+                RelativePath = _linkResolver.ResolveExternalLink(uid, null),
+                IsExternal = true
+            };
+        }
+        
+        // Get output info from Pass 1
+        var outputInfo = _linkResolver.GetOutputInfo(uid);
+        var relativePath = CalculateRelativePath(currentFilePath, outputInfo.FilePath);
+        
+        if (!string.IsNullOrEmpty(outputInfo.Anchor))
+        {
+            relativePath += $"#{outputInfo.Anchor}";
+        }
         
         return new LinkInfo 
         { 
             Uid = uid, 
             DisplayName = ExtractDisplayName(uid), 
-            RelativePath = resolvedPath,
-            IsExternal = isExternal,
-            ExternalUrl = isExternal ? _linkResolver.ResolveExternalLink(uid, null) : null
+            RelativePath = relativePath,
+            IsExternal = false
         };
     }
     
@@ -316,14 +401,91 @@ public class XrefProcessingService
     
     private string ExtractDisplayName(string uid)
     {
-        // Extract simple name from UID (e.g., "SadConsole.ColoredGlyph" -> "ColoredGlyph")
         var lastDot = uid.LastIndexOf('.');
         return lastDot >= 0 ? uid.Substring(lastDot + 1) : uid;
+    }
+    
+    private string CalculateRelativePath(string fromPath, string toPath)
+    {
+        // Calculate relative path between two file paths
+        // Implementation details...
     }
 }
 ```
 
-### 3. Data Models
+### 3. Template Processing Service (Pass 1 Only)
+```csharp
+public class TemplateProcessingService
+{
+    private readonly IStubbleRenderer _renderer;
+    private readonly Dictionary<string, string> _templates;
+    
+    /// <summary>
+    /// PASS 1: Render template with data, preserving XRef tags in output.
+    /// </summary>
+    public string RenderTemplate(string templateName, object data)
+    {
+        var template = _templates[templateName];
+        return _renderer.Render(template, data);
+        // Note: XRef tags in data.Summary, data.Remarks, etc. are preserved
+    }
+}
+```
+
+### 4. Documentation Generator (Orchestrates Both Passes)
+```csharp
+public class DocumentationGenerator
+{
+    private readonly TemplateProcessingService _templateService;
+    private readonly XrefProcessingService _xrefService;
+    private readonly LinkResolutionService _linkResolver;
+    private readonly FileGenerationService _fileService;
+    
+    public async Task GenerateDocumentationAsync(
+        IEnumerable<Item> items, 
+        string outputDirectory)
+    {
+        // PASS 1: Generate files with templates, build UID mappings
+        var generatedFiles = new List<string>();
+        
+        foreach (var item in items)
+        {
+            // Render template (XRefs preserved in output)
+            var content = _templateService.RenderTemplate(GetTemplateName(item), item);
+            
+            // Determine output path (template may affect this)
+            var outputPath = DetermineOutputPath(item, outputDirectory);
+            
+            // Write file
+            await _fileService.WriteFileAsync(outputPath, content);
+            generatedFiles.Add(outputPath);
+            
+            // Record in UID mapping
+            _linkResolver.RecordGeneratedFile(item.Uid, outputPath);
+            
+            // If members are on same page, record anchor mappings
+            if (ShouldCombineMembers(item))
+            {
+                foreach (var childUid in item.Children ?? Enumerable.Empty<string>())
+                {
+                    var anchor = GenerateAnchor(childUid);
+                    _linkResolver.RecordGeneratedFile(childUid, outputPath, anchor);
+                }
+            }
+        }
+        
+        // PASS 2: Process XRefs in all generated files
+        foreach (var filePath in generatedFiles)
+        {
+            var content = await _fileService.ReadFileAsync(filePath);
+            var processedContent = _xrefService.ProcessXrefs(content, filePath);
+            await _fileService.WriteFileAsync(filePath, processedContent);
+        }
+    }
+}
+```
+
+### 5. Data Models
 ```csharp
 public class LinkInfo
 {
@@ -331,10 +493,13 @@ public class LinkInfo
     public string DisplayName { get; set; }
     public string RelativePath { get; set; }
     public bool IsExternal { get; set; }
-    public string ExternalUrl { get; set; }
 }
 
-// Note: ProcessedContent class not needed - XrefProcessingService returns string directly
+public class OutputFileInfo
+{
+    public string FilePath { get; set; }      // Full path to generated file
+    public string Anchor { get; set; }        // Optional anchor (e.g., "foreground" for members)
+}
 ```
 
 ## External References

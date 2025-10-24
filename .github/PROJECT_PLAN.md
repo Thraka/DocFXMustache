@@ -23,9 +23,9 @@ Transform DocFX generated .NET API metadata files (YAML format) into customizabl
 ### File Processing Pipeline
 1. **Input**: DocFX YAML metadata files
 2. **Parse**: Load and validate metadata structure
-3. **Transform**: Apply Mustache templates with context data
-4. **Link Resolution**: Process internal references and generate correct paths → [Link Processing Details](docs/architecture/link-processing.md)
-5. **Output**: Write formatted Markdown/MDX files
+3. **Pass 1 - Template Rendering**: Apply Mustache templates, preserve `<xref>` tags, build UID-to-file mappings
+4. **Pass 2 - Link Resolution**: Process `<xref>` tags using actual output paths, render through `link.mustache` → [Link Processing Details](docs/architecture/link-processing.md)
+5. **Output**: Write formatted Markdown/MDX files with resolved links
 
 ### File Grouping Strategies
 > 📖 **Complete Guide**: [File Grouping Strategies](docs/architecture/file-grouping.md) with examples and implementation details
@@ -44,7 +44,6 @@ Transform DocFX generated .NET API metadata files (YAML format) into customizabl
 - [x] YAML metadata parsing with VYaml
 - [x] NuGet packages configured (VYaml, ZString, Stubble.Core, System.CommandLine)
 - [x] Logging infrastructure (structured logging with console output) ✅ (Oct 24, 2025)
-- [ ] Reference model validation against `.github\reference-files\Models\` *(deferred to Phase 5)*
 
 ### Phase 2: Metadata Processing & Discovery (100% Complete) ✅
 - [x] Multiple file grouping strategies → [File Grouping Details](docs/architecture/file-grouping.md)
@@ -63,25 +62,26 @@ Transform DocFX generated .NET API metadata files (YAML format) into customizabl
   - 12/12 logging tests passing
 
 ### Phase 3: Link Resolution & Template Engine (0% Complete)
-**Next Priority**: Implement Pass 2 generation pipeline
+**Next Priority**: Implement two-pass generation pipeline
 - [ ] Link processing system → [Link Processing Architecture](docs/architecture/link-processing.md)
-  - **Approach**: Use dedicated `link.mustache` template for rendering individual links
-  - XrefProcessingService resolves UIDs, creates `LinkInfo` objects, renders through `link.mustache`
-  - Rendered links injected back into content strings
-  - Templates control link format without code changes
+  - **Architecture**: Two-pass process with `link.mustache` template
+  - **Pass 1**: TemplateProcessingService renders files with `<xref>` preserved, builds UID mappings
+  - **Pass 2**: XrefProcessingService resolves `<xref>` tags using Pass 1 mappings, renders through `link.mustache`
+  - Templates control both content structure (Pass 1) and link format (Pass 2)
 - [ ] Template customization → [Template Implementation](docs/implementation/templates.md)
-- [ ] XrefProcessingService - Parse `<xref>` tags, resolve UIDs, render using `link.mustache`
-- [ ] TemplateProcessingService - Integrate Stubble.Core Mustache rendering
-- [ ] DocumentationGenerator - Orchestrate two-pass workflow
+- [ ] LinkResolutionService - Record generated files in Pass 1, resolve links in Pass 2
+- [ ] XrefProcessingService - Parse `<xref>` tags, resolve UIDs, render using `link.mustache` (Pass 2)
+- [ ] TemplateProcessingService - Integrate Stubble.Core Mustache rendering (Pass 1)
 - [ ] FileGenerationService - Handle file I/O and directory creation
+- [ ] DocumentationGenerator - Orchestrate two-pass workflow (Pass 1: render templates → Pass 2: resolve XRefs)
 - [ ] Default templates for each API item type (class, interface, enum, method) + `link.mustache`
 
 ### Phase 4: File Generation & Output (0% Complete)
-- [ ] Two-pass generation process orchestration
 - [ ] .md and .mdx output format support
 - [ ] Link validation and broken reference detection
 - [ ] Index file generation for assemblies and namespaces
 - [ ] Dry-run and overwrite protection
+- [ ] Error handling for missing UIDs in Pass 2
 
 ### Phase 5: Testing & Polish (0% Complete)
 - [x] Unit tests for core services and models (59 tests)
