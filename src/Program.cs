@@ -82,6 +82,21 @@ class Program
             description: "Overwrite existing output files without prompting",
             getDefaultValue: () => false);
 
+        // Filename case control option
+        var caseOption = new Option<string>(
+            aliases: ["--case"],
+            description: "Filename case: uppercase, lowercase, or mixed (default: lowercase)",
+            getDefaultValue: () => "lowercase");
+        caseOption.AddValidator(result =>
+        {
+            var value = result.GetValueForOption(caseOption);
+            var validValues = new[] { "uppercase", "lowercase", "mixed" };
+            if (!validValues.Contains(value))
+            {
+                result.ErrorMessage = $"Case must be one of: {string.Join(", ", validValues)}";
+            }
+        });
+
         // Add options to root command
         rootCommand.AddOption(inputOption);
         rootCommand.AddOption(outputOption);
@@ -91,13 +106,23 @@ class Program
         rootCommand.AddOption(dryRunOption);
         rootCommand.AddOption(verboseOption);
         rootCommand.AddOption(forceOption);
+        rootCommand.AddOption(caseOption);
 
         // Set the handler
-        rootCommand.SetHandler(async (input, output, template, format, grouping, dryRun, verbose, force) =>
+        rootCommand.SetHandler(async (context) =>
         {
-            await ProcessCommand(input, output, template, format, grouping, dryRun, verbose, force);
-        },
-        inputOption, outputOption, templateOption, formatOption, groupingOption, dryRunOption, verboseOption, forceOption);
+            var input = context.ParseResult.GetValueForOption(inputOption)!;
+            var output = context.ParseResult.GetValueForOption(outputOption)!;
+            var template = context.ParseResult.GetValueForOption(templateOption)!;
+            var format = context.ParseResult.GetValueForOption(formatOption)!;
+            var grouping = context.ParseResult.GetValueForOption(groupingOption)!;
+            var dryRun = context.ParseResult.GetValueForOption(dryRunOption);
+            var verbose = context.ParseResult.GetValueForOption(verboseOption);
+            var force = context.ParseResult.GetValueForOption(forceOption);
+            var caseControl = context.ParseResult.GetValueForOption(caseOption)!;
+            
+            await ProcessCommand(input, output, template, format, grouping, dryRun, verbose, force, caseControl);
+        });
 
         return await rootCommand.InvokeAsync(args);
     }
@@ -110,7 +135,8 @@ class Program
         string grouping,
         bool dryRun,
         bool verbose,
-        bool force)
+        bool force,
+        string caseControl)
     {
         Console.WriteLine("DocFX Mustache - Processing...");
         Console.WriteLine($"Input Directory: {input.FullName}");
@@ -121,6 +147,7 @@ class Program
         Console.WriteLine($"Dry Run: {dryRun}");
         Console.WriteLine($"Verbose: {verbose}");
         Console.WriteLine($"Force Overwrite: {force}");
+        Console.WriteLine($"Filename Case: {caseControl}");
 
         // Validate input directory exists
         if (!input.Exists)
@@ -160,7 +187,7 @@ class Program
             Console.WriteLine("\n🔍 Phase 2 - Pass 1: Discovery");
             Console.WriteLine("Building UID mappings and file structure...");
             
-            var uidMappings = await discoveryService.BuildUidMappingsAsync(input.FullName, grouping);
+            var uidMappings = await discoveryService.BuildUidMappingsAsync(input.FullName, grouping, caseControl);
             
             if (verbose)
             {

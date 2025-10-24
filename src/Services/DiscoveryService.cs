@@ -25,8 +25,9 @@ public class DiscoveryService
     /// </summary>
     /// <param name="inputDirectory">Directory containing DocFX YAML files</param>
     /// <param name="groupingStrategy">Strategy for organizing output files</param>
+    /// <param name="caseControl">Filename case control: uppercase, lowercase, or mixed</param>
     /// <returns>UidMappings containing all discovered information</returns>
-    public async Task<UidMappings> BuildUidMappingsAsync(string inputDirectory, string groupingStrategy)
+    public async Task<UidMappings> BuildUidMappingsAsync(string inputDirectory, string groupingStrategy, string caseControl = "lowercase")
     {
         if (string.IsNullOrEmpty(inputDirectory))
             throw new ArgumentException("Input directory cannot be null or empty", nameof(inputDirectory));
@@ -45,7 +46,7 @@ public class DiscoveryService
                 continue;
             }
 
-            ProcessRootObject(root, mappings, groupingStrategy);
+            ProcessRootObject(root, mappings, groupingStrategy, caseControl);
         }
 
         Console.WriteLine($"Discovery completed: {mappings.TotalUids} UIDs found across {mappings.Assemblies.Count()} assemblies and {mappings.Namespaces.Count()} namespaces");
@@ -56,7 +57,7 @@ public class DiscoveryService
     /// <summary>
     /// Processes a single Root object and extracts all UIDs and mappings
     /// </summary>
-    private void ProcessRootObject(Root root, UidMappings mappings, string groupingStrategy)
+    private void ProcessRootObject(Root root, UidMappings mappings, string groupingStrategy, string caseControl)
     {
         foreach (var item in root.Items)
         {
@@ -67,7 +68,7 @@ public class DiscoveryService
             mappings.UidToItem[item.Uid] = item;
 
             // Determine output path based on grouping strategy
-            var outputPath = DetermineOutputPath(item, groupingStrategy);
+            var outputPath = DetermineOutputPath(item, groupingStrategy, caseControl);
             mappings.UidToFilePath[item.Uid] = outputPath;
 
             // Track assemblies
@@ -93,12 +94,15 @@ public class DiscoveryService
     /// <summary>
     /// Determines the output file path for an item based on the grouping strategy
     /// </summary>
-    public string DetermineOutputPath(Item item, string groupingStrategy)
+    public string DetermineOutputPath(Item item, string groupingStrategy, string caseControl = "lowercase")
     {
         // For flat grouping, use the fully qualified UID; otherwise use just the type name
         var fileName = groupingStrategy.ToLowerInvariant() == "flat"
             ? GetSafeFileName(item.Uid ?? item.Name ?? "unknown")
             : GetSafeFileName(item.Name ?? item.Uid ?? "unknown");
+
+        // Apply case transformation to filename
+        fileName = ApplyCaseTransformation(fileName, caseControl);
 
         return groupingStrategy.ToLowerInvariant() switch
         {
@@ -107,6 +111,20 @@ public class DiscoveryService
             "assembly-namespace" => $"{GetAssemblyDirectory(item.Assemblies)}/{GetNamespaceDirectory(item.Namespace)}/{fileName}.md",
             "assembly-flat" => $"{GetAssemblyDirectory(item.Assemblies)}/{fileName}.md",
             _ => throw new ArgumentException($"Unknown grouping strategy: {groupingStrategy}")
+        };
+    }
+
+    /// <summary>
+    /// Applies case transformation to a filename based on the case control setting
+    /// </summary>
+    private static string ApplyCaseTransformation(string fileName, string caseControl)
+    {
+        return caseControl.ToLowerInvariant() switch
+        {
+            "uppercase" => fileName.ToUpperInvariant(),
+            "lowercase" => fileName.ToLowerInvariant(),
+            "mixed" => fileName, // Keep original case
+            _ => fileName.ToLowerInvariant() // Default to lowercase
         };
     }
 
@@ -189,9 +207,7 @@ public class DiscoveryService
         // The backtick has already been replaced with dash above, so now we have "List-1"
         // which is correct for the Microsoft Learn pattern
 
-        // Convert to lowercase for consistency with directory names
-        result = result.ToLowerInvariant();
-
+        // Do NOT convert to lowercase here - let ApplyCaseTransformation handle it
         return result;
     }
 

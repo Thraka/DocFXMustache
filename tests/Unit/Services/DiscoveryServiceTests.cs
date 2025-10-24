@@ -540,6 +540,101 @@ public class DiscoveryServiceTests : IDisposable
 
     #endregion
 
+    #region Case Control Tests
+
+    [Fact]
+    public async Task BuildUidMappingsAsync_WithLowercaseCase_GeneratesLowercaseFilenames()
+    {
+        // Arrange
+        var fixturesDir = TestDataHelper.GetFixturesDirectory();
+
+        // Act
+        var mappings = await _discoveryService.BuildUidMappingsAsync(fixturesDir, "flat", "lowercase");
+
+        // Assert
+        Assert.NotEmpty(mappings.UidToFilePath);
+        foreach (var path in mappings.UidToFilePath.Values)
+        {
+            var filename = Path.GetFileNameWithoutExtension(path);
+            Assert.Equal(filename.ToLowerInvariant(), filename);
+        }
+    }
+
+    [Fact]
+    public async Task BuildUidMappingsAsync_WithUppercaseCase_GeneratesUppercaseFilenames()
+    {
+        // Arrange
+        var fixturesDir = TestDataHelper.GetFixturesDirectory();
+
+        // Act
+        var mappings = await _discoveryService.BuildUidMappingsAsync(fixturesDir, "flat", "uppercase");
+
+        // Assert
+        Assert.NotEmpty(mappings.UidToFilePath);
+        foreach (var path in mappings.UidToFilePath.Values)
+        {
+            var filename = Path.GetFileNameWithoutExtension(path);
+            Assert.Equal(filename.ToUpperInvariant(), filename);
+        }
+    }
+
+    [Fact]
+    public async Task BuildUidMappingsAsync_WithMixedCase_PreservesOriginalCase()
+    {
+        // Arrange
+        var fixturesDir = TestDataHelper.GetFixturesDirectory();
+
+        // Act
+        var mappingsLowercase = await _discoveryService.BuildUidMappingsAsync(fixturesDir, "flat", "lowercase");
+        var mappingsMixed = await _discoveryService.BuildUidMappingsAsync(fixturesDir, "flat", "mixed");
+
+        // Assert
+        Assert.NotEmpty(mappingsMixed.UidToFilePath);
+        
+        // Mixed case should preserve original casing, so it should differ from lowercase for some files
+        var hasDifference = false;
+        foreach (var uid in mappingsMixed.UidToFilePath.Keys)
+        {
+            if (mappingsLowercase.UidToFilePath.ContainsKey(uid))
+            {
+                var mixedFilename = Path.GetFileNameWithoutExtension(mappingsMixed.UidToFilePath[uid]);
+                var lowercaseFilename = Path.GetFileNameWithoutExtension(mappingsLowercase.UidToFilePath[uid]);
+                
+                if (mixedFilename != lowercaseFilename)
+                {
+                    hasDifference = true;
+                    break;
+                }
+            }
+        }
+        
+        Assert.True(hasDifference, "Mixed case should preserve original casing and differ from lowercase");
+    }
+
+    [Fact]
+    public async Task BuildUidMappingsAsync_CaseControlWorksWithAllGroupingStrategies()
+    {
+        // Arrange
+        var fixturesDir = TestDataHelper.GetFixturesDirectory();
+        var strategies = new[] { "flat", "namespace", "assembly-flat", "assembly-namespace" };
+        var cases = new[] { "lowercase", "uppercase", "mixed" };
+
+        foreach (var strategy in strategies)
+        {
+            foreach (var caseControl in cases)
+            {
+                // Act
+                var mappings = await _discoveryService.BuildUidMappingsAsync(fixturesDir, strategy, caseControl);
+
+                // Assert
+                Assert.NotEmpty(mappings.UidToFilePath);
+                Assert.True(mappings.TotalUids > 0);
+            }
+        }
+    }
+
+    #endregion
+
     public void Dispose()
     {
         // Cleanup if needed
