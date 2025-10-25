@@ -104,13 +104,13 @@ public sealed class TemplateProcessingService
     }
 
     /// <summary>
-    /// Render a table of contents using the toc.mustache template
+    /// Render a table of contents using the index-root.mustache template
     /// </summary>
     public string RenderTableOfContents(TableOfContentsData tocData)
     {
         if (tocData == null) throw new ArgumentNullException(nameof(tocData));
 
-        var template = LoadTemplate("toc.mustache");
+        var template = LoadTemplate(_config.Templates.IndexRoot);
         
         _logger.LogDebug("Rendering table of contents with {AssemblyCount} assemblies", tocData.Assemblies.Count);
 
@@ -127,13 +127,13 @@ public sealed class TemplateProcessingService
     }
 
     /// <summary>
-    /// Render an assembly index using the assembly-index.mustache template
+    /// Render an assembly index using the index-assembly.mustache template
     /// </summary>
     public string RenderAssemblyIndex(AssemblyIndexData assemblyData)
     {
         if (assemblyData == null) throw new ArgumentNullException(nameof(assemblyData));
 
-        var template = LoadTemplate("assembly-index.mustache");
+        var template = LoadTemplate(_config.Templates.IndexAssembly);
         
         _logger.LogDebug("Rendering assembly index for {AssemblyName} with {NamespaceCount} namespaces", 
             assemblyData.Name, assemblyData.Namespaces.Count);
@@ -151,13 +151,13 @@ public sealed class TemplateProcessingService
     }
 
     /// <summary>
-    /// Render a namespace index using the namespace-index.mustache template
+    /// Render a namespace index using the index-namespace.mustache template
     /// </summary>
     public string RenderNamespaceIndex(NamespaceIndexData namespaceData)
     {
         if (namespaceData == null) throw new ArgumentNullException(nameof(namespaceData));
 
-        var template = LoadTemplate("namespace-index.mustache");
+        var template = LoadTemplate(_config.Templates.IndexNamespace);
         
         _logger.LogDebug("Rendering namespace index for {NamespaceName} with {TypeCount} types", 
             namespaceData.Name, namespaceData.TotalTypes);

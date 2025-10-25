@@ -17,6 +17,9 @@
     "assembly": "assembly.mustache",
     "link": "link.mustache",
     "member": "member.mustache",
-    "delegate": "delegate.mustache"
+    "delegate": "delegate.mustache",
+    "indexRoot": "index-root.mustache",
+    "indexAssembly": "index-assembly.mustache",
+    "indexNamespace": "index-namespace.mustache"
   }
 }

@@ -104,7 +104,7 @@ public class IndexGenerationService
         };
 
         var renderedContent = _templateProcessingService.RenderTableOfContents(tocData);
-        var outputPath = Path.Combine(outputDirectory, "README.md");
+        var outputPath = GetRootIndexFilePath(outputDirectory, groupingStrategy);
 
         await WriteFileAsync(outputPath, renderedContent);
         _logger.LogDebug("Generated table of contents at {OutputPath}", outputPath);
@@ -332,34 +332,55 @@ public class IndexGenerationService
         return typePath;
     }
 
-    private static string GetAssemblyIndexPath(string assembly, string groupingStrategy)
+    private string GetAssemblyIndexPath(string assembly, string groupingStrategy)
     {
-        return groupingStrategy.ToLowerInvariant() switch
-        {
-            "assembly-namespace" or "assembly-flat" => $"{GetSafeDirectoryName(assembly)}/README.md",
-            _ => $"assemblies/{GetSafeDirectoryName(assembly)}.md"
-        };
-    }
-
-    private static string GetNamespaceIndexPath(string @namespace, string? assembly, string groupingStrategy)
-    {
-        var safeNamespace = GetSafeDirectoryName(@namespace);
+        var fileExtension = $".{_templateProcessingService.Configuration.OutputFormat}";
+        var safeAssemblyName = GetSafeDirectoryName(assembly);
         
         return groupingStrategy.ToLowerInvariant() switch
         {
-            "namespace" => $"{safeNamespace}/README.md",
-            "assembly-namespace" when !string.IsNullOrEmpty(assembly) => $"{GetSafeDirectoryName(assembly)}/{safeNamespace}/README.md",
-            _ => $"namespaces/{safeNamespace}.md"
+            // When assemblies have their own folders, use index.ext
+            "assembly-namespace" or "assembly-flat" => $"{safeAssemblyName}/index{fileExtension}",
+            // When flat, use specific naming to avoid conflicts
+            "flat" => $"{safeAssemblyName}.assembly{fileExtension}",
+            // Default case: create assemblies folder structure
+            _ => $"assemblies/{safeAssemblyName}{fileExtension}"
         };
     }
 
-    private static string GetAssemblyIndexFilePath(string outputDirectory, string assembly, string groupingStrategy)
+    private string GetNamespaceIndexPath(string @namespace, string? assembly, string groupingStrategy)
+    {
+        var safeNamespace = GetSafeDirectoryName(@namespace);
+        var fileExtension = $".{_templateProcessingService.Configuration.OutputFormat}";
+        
+        return groupingStrategy.ToLowerInvariant() switch
+        {
+            // When namespaces have their own folder, use index.ext
+            "namespace" => $"{safeNamespace}/index{fileExtension}",
+            // When assembly-namespace structure, namespace gets its own folder under assembly
+            "assembly-namespace" when !string.IsNullOrEmpty(assembly) => 
+                $"{GetSafeDirectoryName(assembly)}/{safeNamespace}/index{fileExtension}",
+            // When flat, use specific naming to avoid conflicts
+            "flat" => $"{safeNamespace}.namespace{fileExtension}",
+            // Default case: create namespaces folder structure
+            _ => $"namespaces/{safeNamespace}{fileExtension}"
+        };
+    }
+
+    private string GetRootIndexFilePath(string outputDirectory, string groupingStrategy)
+    {
+        // Always generate index.md/.mdx at the root level
+        var fileExtension = $".{_templateProcessingService.Configuration.OutputFormat}";
+        return Path.Combine(outputDirectory, $"index{fileExtension}");
+    }
+
+    private string GetAssemblyIndexFilePath(string outputDirectory, string assembly, string groupingStrategy)
     {
         var relativePath = GetAssemblyIndexPath(assembly, groupingStrategy);
         return Path.Combine(outputDirectory, relativePath);
     }
 
-    private static string GetNamespaceIndexFilePath(string outputDirectory, string @namespace, string groupingStrategy)
+    private string GetNamespaceIndexFilePath(string outputDirectory, string @namespace, string groupingStrategy)
     {
         var relativePath = GetNamespaceIndexPath(@namespace, null, groupingStrategy);
         return Path.Combine(outputDirectory, relativePath);

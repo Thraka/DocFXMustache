@@ -110,6 +110,24 @@ public sealed class TemplateFileMappings
     public string? Delegate { get; set; } = "delegate.mustache";
 
     /// <summary>
+    /// Template for root index page (table of contents)
+    /// </summary>
+    [JsonPropertyName("indexRoot")]
+    public string IndexRoot { get; set; } = "index-root.mustache";
+
+    /// <summary>
+    /// Template for assembly index pages
+    /// </summary>
+    [JsonPropertyName("indexAssembly")]
+    public string IndexAssembly { get; set; } = "index-assembly.mustache";
+
+    /// <summary>
+    /// Template for namespace index pages
+    /// </summary>
+    [JsonPropertyName("indexNamespace")]
+    public string IndexNamespace { get; set; } = "index-namespace.mustache";
+
+    /// <summary>
     /// Get the template file name for a given item type.
     /// Falls back to class.mustache if not found.
     /// </summary>
