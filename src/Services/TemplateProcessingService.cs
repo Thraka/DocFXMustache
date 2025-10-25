@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using DocFXMustache.Models;
+using DocFXMustache.Services;
 using Microsoft.Extensions.Logging;
 using Stubble.Core.Builders;
 using Stubble.Core.Settings;
@@ -98,6 +99,77 @@ public sealed class TemplateProcessingService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error rendering member template for {MemberName}", member.FullName);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Render a table of contents using the toc.mustache template
+    /// </summary>
+    public string RenderTableOfContents(TableOfContentsData tocData)
+    {
+        if (tocData == null) throw new ArgumentNullException(nameof(tocData));
+
+        var template = LoadTemplate("toc.mustache");
+        
+        _logger.LogDebug("Rendering table of contents with {AssemblyCount} assemblies", tocData.Assemblies.Count);
+
+        try
+        {
+            var rendered = _renderer.Render(template, tocData);
+            return rendered;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error rendering table of contents template");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Render an assembly index using the assembly-index.mustache template
+    /// </summary>
+    public string RenderAssemblyIndex(AssemblyIndexData assemblyData)
+    {
+        if (assemblyData == null) throw new ArgumentNullException(nameof(assemblyData));
+
+        var template = LoadTemplate("assembly-index.mustache");
+        
+        _logger.LogDebug("Rendering assembly index for {AssemblyName} with {NamespaceCount} namespaces", 
+            assemblyData.Name, assemblyData.Namespaces.Count);
+
+        try
+        {
+            var rendered = _renderer.Render(template, assemblyData);
+            return rendered;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error rendering assembly index template for {AssemblyName}", assemblyData.Name);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Render a namespace index using the namespace-index.mustache template
+    /// </summary>
+    public string RenderNamespaceIndex(NamespaceIndexData namespaceData)
+    {
+        if (namespaceData == null) throw new ArgumentNullException(nameof(namespaceData));
+
+        var template = LoadTemplate("namespace-index.mustache");
+        
+        _logger.LogDebug("Rendering namespace index for {NamespaceName} with {TypeCount} types", 
+            namespaceData.Name, namespaceData.TotalTypes);
+
+        try
+        {
+            var rendered = _renderer.Render(template, namespaceData);
+            return rendered;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error rendering namespace index template for {NamespaceName}", namespaceData.Name);
             throw;
         }
     }

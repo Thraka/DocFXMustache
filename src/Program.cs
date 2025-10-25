@@ -98,6 +98,12 @@ class Program
             }
         });
 
+        // Generate index files option
+        var generateIndexOption = new Option<bool>(
+            aliases: ["--generate-index"],
+            description: "Generate index files (table of contents, assembly overviews, namespace indexes)",
+            getDefaultValue: () => false);
+
         // Add options to root command
         rootCommand.AddOption(inputOption);
         rootCommand.AddOption(outputOption);
@@ -108,6 +114,7 @@ class Program
         rootCommand.AddOption(verboseOption);
         rootCommand.AddOption(forceOption);
         rootCommand.AddOption(caseOption);
+        rootCommand.AddOption(generateIndexOption);
 
         // Set the handler
         rootCommand.SetHandler(async (context) =>
@@ -121,8 +128,9 @@ class Program
             var verbose = context.ParseResult.GetValueForOption(verboseOption);
             var force = context.ParseResult.GetValueForOption(forceOption);
             var caseControl = context.ParseResult.GetValueForOption(caseOption);
+            var generateIndex = context.ParseResult.GetValueForOption(generateIndexOption);
             
-            await ProcessCommand(input, output, templates, format, grouping, dryRun, verbose, force, caseControl);
+            await ProcessCommand(input, output, templates, format, grouping, dryRun, verbose, force, caseControl, generateIndex);
         });
 
         return await rootCommand.InvokeAsync(args);
@@ -153,7 +161,8 @@ class Program
         bool dryRun,
         bool verbose,
         bool force,
-        string? caseControl)
+        string? caseControl,
+        bool generateIndex)
     {
         // Load template configuration to get defaults
         var templateConfig = LoadTemplateConfiguration(templates.FullName);
@@ -174,6 +183,7 @@ class Program
         Console.WriteLine($"Dry Run: {dryRun}");
         Console.WriteLine($"Verbose: {verbose}");
         Console.WriteLine($"Force Overwrite: {force}");
+        Console.WriteLine($"Generate Index Files: {generateIndex}");
 
         // Validate input directory exists
         if (!input.Exists)
@@ -380,6 +390,45 @@ class Program
                 
                 programLogger.LogInformation("Generation completed: {FilesGenerated} files generated, {ErrorsEncountered} errors", 
                     filesGenerated, errorsEncountered);
+
+                // Generate index files if requested
+                if (generateIndex)
+                {
+                    try
+                    {
+                        programLogger.LogInformation("Starting index file generation");
+                        Console.WriteLine("\n📚 Generating index files...");
+
+                        var indexLogger = loggerFactory.CreateLogger<IndexGenerationService>();
+                        var indexGenerationService = new IndexGenerationService(templateProcessingService, indexLogger);
+
+                        var indexFiles = await indexGenerationService.GenerateAllIndexFilesAsync(uidMappings, output.FullName, finalGrouping);
+
+                        Console.WriteLine($"✅ Index generation completed!");
+                        Console.WriteLine($"   Index files generated: {indexFiles.Count}");
+                        
+                        if (verbose)
+                        {
+                            foreach (var indexFile in indexFiles)
+                            {
+                                var relativePath = Path.GetRelativePath(output.FullName, indexFile);
+                                Console.WriteLine($"  ✅ Generated: {relativePath}");
+                            }
+                        }
+
+                        programLogger.LogInformation("Index generation completed: {IndexFileCount} index files generated", indexFiles.Count);
+                    }
+                    catch (Exception ex)
+                    {
+                        programLogger.LogError(ex, "Error during index file generation");
+                        Console.Error.WriteLine($"❌ Error generating index files: {ex.Message}");
+                        if (verbose)
+                        {
+                            Console.Error.WriteLine($"     Stack trace: {ex.StackTrace}");
+                        }
+                        errorsEncountered++;
+                    }
+                }
             }
         }
         catch (Exception ex)

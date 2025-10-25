@@ -1,0 +1,31 @@
+---
+title: {{Name}} Namespace
+description: API documentation for {{Name}} namespace
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Overview
+
+This namespace contains **{{TotalTypes}} types**.
+
+{{#Types}}
+## {{Kind}}
+
+<CardGrid>
+{{#Types}}
+<Card title="{{Name}}" icon="puzzle">
+  {{#Summary}}
+  {{Summary}}
+  {{/Summary}}
+  
+  [View Details]({{Path}})
+</Card>
+{{/Types}}
+</CardGrid>
+
+{{/Types}}
+
+:::note[Generated]
+Documentation generated on {{GeneratedDate}}.
+:::

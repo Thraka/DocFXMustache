@@ -1,0 +1,30 @@
+---
+title: API Documentation
+description: Complete API documentation overview
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Overview
+
+This documentation contains **{{TotalTypes}} types** across **{{TotalAssemblies}} assemblies** and **{{TotalNamespaces}} namespaces**.
+
+<CardGrid>
+{{#Assemblies}}
+<Card title="{{Name}}" icon="package">
+  {{#Namespaces}}
+  - [{{Name}}]({{Path}}) ({{TypeCount}} types)
+  {{/Namespaces}}
+</Card>
+{{/Assemblies}}
+</CardGrid>
+
+## Statistics
+
+- **Total Types**: {{TotalTypes}}
+- **Total Assemblies**: {{TotalAssemblies}}
+- **Total Namespaces**: {{TotalNamespaces}}
+
+:::note[Generated]
+Documentation generated on {{GeneratedDate}} using {{GroupingStrategy}} grouping strategy.
+:::
