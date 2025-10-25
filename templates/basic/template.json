@@ -1,0 +1,22 @@
+{
+  "name": "basic",
+  "description": "Basic Markdown template for general documentation",
+  "version": "1.0.0",
+  "outputFormat": "md",
+  "fileGrouping": "flat",
+  "filenameCase": "lowercase",
+  "combineMembers": true,
+  "generateIndexFiles": true,
+  "includeInheritedMembers": false,
+  "templates": {
+    "class": "class.mustache",
+    "interface": "interface.mustache",
+    "enum": "enum.mustache",
+    "struct": "struct.mustache",
+    "namespace": "namespace.mustache",
+    "assembly": "assembly.mustache",
+    "link": "link.mustache",
+    "member": "member.mustache",
+    "delegate": "delegate.mustache"
+  }
+}

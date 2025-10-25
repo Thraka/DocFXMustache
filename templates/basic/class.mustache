@@ -1,0 +1,188 @@
+# {{name}}
+
+{{#summary}}
+{{summary}}
+{{/summary}}
+
+**Namespace:** {{namespace}}  
+**Type:** {{type}}
+
+{{#hasInheritance}}
+## Inheritance
+
+{{#inheritance}}
+- <xref uid="{{uid}}">{{name}}</xref>
+{{/inheritance}}
+
+{{/hasInheritance}}
+{{#hasImplements}}
+## Implements
+
+{{#implements}}
+- <xref uid="{{uid}}">{{name}}</xref>
+{{/implements}}
+
+{{/hasImplements}}
+{{#syntax}}
+## Syntax
+
+```csharp
+{{syntax}}
+```
+
+{{/syntax}}
+{{#remarks}}
+## Remarks
+
+{{remarks}}
+
+{{/remarks}}
+{{#hasConstructors}}
+## Constructors
+
+{{#constructors}}
+### <a id="{{uid}}"></a> {{name}}
+
+{{#summary}}
+{{summary}}
+{{/summary}}
+
+{{#hasParameters}}
+**Parameters:**
+
+{{#parameters}}
+- `{{name}}` (<xref uid="{{type.uid}}">{{type.name}}</xref>): {{description}}
+{{/parameters}}
+
+{{/hasParameters}}
+{{#syntax}}
+```csharp
+{{syntax}}
+```
+
+{{/syntax}}
+{{/constructors}}
+
+{{/hasConstructors}}
+{{#hasProperties}}
+## Properties
+
+{{#properties}}
+### <a id="{{uid}}"></a> {{name}}
+
+{{#summary}}
+{{summary}}
+{{/summary}}
+
+**Type:** <xref uid="{{returns.type.uid}}">{{returns.type.name}}</xref>
+
+{{#syntax}}
+```csharp
+{{syntax}}
+```
+
+{{/syntax}}
+{{#remarks}}
+{{remarks}}
+{{/remarks}}
+
+{{/properties}}
+
+{{/hasProperties}}
+{{#hasMethods}}
+## Methods
+
+{{#methods}}
+### <a id="{{uid}}"></a> {{name}}
+
+{{#summary}}
+{{summary}}
+{{/summary}}
+
+{{#hasParameters}}
+**Parameters:**
+
+{{#parameters}}
+- `{{name}}` (<xref uid="{{type.uid}}">{{type.name}}</xref>): {{description}}
+{{/parameters}}
+
+{{/hasParameters}}
+{{#hasReturns}}
+**Returns:** <xref uid="{{returns.type.uid}}">{{returns.type.name}}</xref>
+
+{{#returns.description}}
+{{returns.description}}
+{{/returns.description}}
+
+{{/hasReturns}}
+{{#hasExceptions}}
+**Exceptions:**
+
+{{#exceptions}}
+- <xref uid="{{type.uid}}">{{type.name}}</xref>: {{description}}
+{{/exceptions}}
+
+{{/hasExceptions}}
+{{#syntax}}
+```csharp
+{{syntax}}
+```
+
+{{/syntax}}
+{{#remarks}}
+{{remarks}}
+{{/remarks}}
+
+{{/methods}}
+
+{{/hasMethods}}
+{{#hasEvents}}
+## Events
+
+{{#events}}
+### <a id="{{uid}}"></a> {{name}}
+
+{{#summary}}
+{{summary}}
+{{/summary}}
+
+**Type:** <xref uid="{{returns.type.uid}}">{{returns.type.name}}</xref>
+
+{{#syntax}}
+```csharp
+{{syntax}}
+```
+
+{{/syntax}}
+{{#remarks}}
+{{remarks}}
+{{/remarks}}
+
+{{/events}}
+
+{{/hasEvents}}
+{{#hasFields}}
+## Fields
+
+{{#fields}}
+### <a id="{{uid}}"></a> {{name}}
+
+{{#summary}}
+{{summary}}
+{{/summary}}
+
+**Type:** <xref uid="{{returns.type.uid}}">{{returns.type.name}}</xref>
+
+{{#syntax}}
+```csharp
+{{syntax}}
+```
+
+{{/syntax}}
+{{#remarks}}
+{{remarks}}
+{{/remarks}}
+
+{{/fields}}
+
+{{/hasFields}}

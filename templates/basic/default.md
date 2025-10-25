@@ -4,14 +4,19 @@
 {{summary}}
 {{/summary}}
 
-## Details
-
-- **UID**: {{uid}}
-- **Type**: {{type}}
-- **Namespace**: {{namespace}}
+**Namespace:** {{namespace}}  
+**Type:** {{type}}
 
 {{#syntax}}
+## Syntax
+
 ```csharp
 {{syntax}}
 ```
 {{/syntax}}
+
+{{#remarks}}
+## Remarks
+
+{{remarks}}
+{{/remarks}}

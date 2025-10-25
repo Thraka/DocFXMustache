@@ -1,62 +1,10 @@
 # Configuration
 
-## Configuration Sources
+## Current Implementation Status
 
-The application uses a hierarchical configuration system with the following priority order:
+This document describes the configuration options that are currently implemented in DocFX Mustache. The system currently supports command-line configuration with template-specific settings.
 
-1. **Command line arguments** (highest priority)
-2. **Configuration file** (docfx-mustache.json)
-3. **Environment variables**
-4. **Default values** (lowest priority)
-
-## Configuration File Structure
-
-### Default Configuration (`docfx-mustache.json`)
-```json
-{
-  "input": "./api",
-  "output": "./docs",
-  "templates": "./templates",
-  "format": "md",
-  "grouping": "flat",
-  "overwrite": false,
-  "verbose": false,
-  "dryRun": false,
-  "output": {
-    "defaultFormat": "md",
-    "defaultGrouping": "flat",
-    "fileNamingConvention": "lowercase-hyphen",
-    "caseHandling": "lowercase",
-    "overwriteExisting": false
-  },
-  "templates": {
-    "defaultTemplateSet": "standard",
-    "customHelpers": [],
-    "partialDirectories": []
-  },
-  "processing": {
-    "includePrivateMembers": false,
-    "includeInternalMembers": false,
-    "generateIndexFiles": true,
-    "createAssemblyIndexes": true,
-    "validateLinks": true
-  },
-  "fileGrouping": {
-    "maxDirectoryDepth": 10,
-    "groupingStrategies": ["flat", "namespace", "assembly-namespace", "assembly-flat"],
-    "assemblyDetection": {
-      "useMetadataAssemblyInfo": true,
-      "fallbackToFilename": true
-    }
-  },
-  "linkProcessing": {
-    "resolveExternalLinks": true,
-    "externalLinkValidation": false,
-    "brokenLinkHandling": "warn",
-    "generateLinkReport": true
-  }
-}
-```
+**Note**: Configuration file support (`docfx-mustache.json`) and environment variables are planned for future implementation.
 
 ## Command Line Interface
 
@@ -71,39 +19,43 @@ DocFXMustache [options]
 ```bash
 -i, --input <path>        Input directory containing DocFX metadata files
 -o, --output <path>       Output directory for generated files
--t, --templates <path>    Templates directory (optional)
+-t, --templates <path>    Templates directory
 ```
 
 #### Format Options
 ```bash
--f, --format <format>     Output format: md (default) or mdx
---grouping <strategy>     File grouping strategy: flat, namespace, 
-                         assembly-namespace, assembly-flat
---case <handling>        Filename case handling: lowercase (default), 
-                         uppercase, preserve
+-f, --format <format>     Output format: md or mdx. If not specified, uses template default.
+-g, --grouping <strategy> File grouping strategy: flat, namespace, 
+                         assembly-namespace, assembly-flat. If not specified, uses template default.
+--case <handling>        Filename case handling: lowercase, uppercase, mixed. 
+                         If not specified, uses template default.
 ```
 
 #### Behavior Options
 ```bash
---overwrite              Overwrite existing output files
+--force                  Overwrite existing output files
 --dry-run               Preview changes without writing files
---verbose               Enable verbose logging
---config <path>         Custom configuration file path
-```
-
-#### Processing Options
-```bash
---include-private       Include private members
---include-internal      Include internal members
---no-index-files        Skip generating index files
---validate-links        Validate all links after generation
+-v, --verbose           Enable verbose logging
 ```
 
 ### Usage Examples
 
-#### Basic Generation
+#### Basic Generation (using template defaults)
 ```bash
-DocFXMustache -i "./api" -o "./docs"
+DocFXMustache -i "./api" -o "./docs" -t "./templates/basic"
+# Uses template defaults: md format, flat grouping, lowercase filenames
+```
+
+#### Using Starlight Template (with template defaults)
+```bash
+DocFXMustache -i "./api" -o "./docs" -t "./templates/starlight"
+# Uses template defaults: mdx format, namespace grouping, lowercase filenames
+```
+
+#### Override Template Defaults
+```bash
+DocFXMustache -i "./api" -o "./docs" -t "./templates/starlight" --format md --grouping flat
+# Overrides: md format, flat grouping (template default: mdx, namespace)
 ```
 
 #### Custom Templates and Format
@@ -111,226 +63,174 @@ DocFXMustache -i "./api" -o "./docs"
 DocFXMustache -i "./api" -o "./docs" -t "./custom-templates" -f mdx
 ```
 
-#### Namespace Grouping with Validation
+#### Namespace Grouping with Preview
 ```bash
-DocFXMustache -i "./api" -o "./docs" --grouping namespace --validate-links
+DocFXMustache -i "./api" -o "./docs" -t "./templates" --grouping namespace --dry-run
 ```
 
-#### Dry Run for Preview
+#### Verbose Output
 ```bash
-DocFXMustache -i "./api" -o "./docs" --dry-run --verbose
+DocFXMustache -i "./api" -o "./docs" -t "./templates" --verbose
 ```
 
-## Configuration Sections
+## Template Configuration
 
-### Output Configuration
-Controls how files are generated and organized:
+### Template Directory Structure
+
+Templates are organized in directories with a `template.json` configuration file:
+
+```
+templates/
+├── basic/
+│   ├── template.json
+│   ├── class.mustache
+│   ├── interface.mustache
+│   ├── enum.mustache
+│   ├── struct.mustache
+│   ├── delegate.mustache
+│   ├── member.mustache
+│   └── link.mustache
+└── starlight/
+    ├── template.json
+    └── ... (template files)
+```
+
+### Template Configuration File (`template.json`)
+
+Each template directory must include a `template.json` file:
 
 ```json
 {
-  "output": {
-    "defaultFormat": "md",              // Default output format
-    "defaultGrouping": "flat",          // Default grouping strategy
-    "fileNamingConvention": "lowercase-hyphen", // File naming style
-    "caseHandling": "lowercase",        // File/directory case: lowercase, uppercase, preserve
-    "overwriteExisting": false,         // Overwrite protection
-    "createBackups": false,             // Create .bak files before overwrite
-    "cleanOutputDirectory": false       // Clean output dir before generation
-  }
-}
-```
-
-### Template Configuration
-Controls template processing and customization:
-
-```json
-{
+  "name": "basic",
+  "description": "Basic Markdown template for general documentation",
+  "version": "1.0.0",
+  "outputFormat": "md",
+  "fileGrouping": "flat",
+  "filenameCase": "lowercase",
+  "combineMembers": true,
+  "generateIndexFiles": true,
+  "includeInheritedMembers": false,
   "templates": {
-    "defaultTemplateSet": "standard",   // Built-in template set to use
-    "customTemplateDirectory": null,    // Override template directory
-    "combineMembers": true,             // Combine members with parent type (vs. separate files)
-    "generateIndexFiles": true,         // Generate namespace/assembly index files
-    "includeInheritedMembers": false,   // Include inherited members in documentation
-    "partialDirectories": [             // Additional partial directories
-      "./templates/partials"
-    ],
-    "customHelpers": [                  // Custom helper assemblies
-      "./MyHelpers.dll"
-    ],
-    "templateExtensions": {             // Template file extensions
-      "class": ".mustache",
-      "interface": ".mustache",
-      "enum": ".mustache",
-      "link": ".mustache"               // Required: Link formatting template
-    }
+    "class": "class.mustache",
+    "interface": "interface.mustache",
+    "enum": "enum.mustache",
+    "struct": "struct.mustache",
+    "namespace": "namespace.mustache",
+    "assembly": "assembly.mustache",
+    "link": "link.mustache",
+    "member": "member.mustache",
+    "delegate": "delegate.mustache"
   }
 }
 ```
 
-**Template Organization Modes:**
-- `combineMembers: true` - All members on parent type page with anchors (e.g., `ColoredGlyph.md#foreground`)
-- `combineMembers: false` - Each member gets own file (e.g., `ColoredGlyph.Foreground.md`)
+### Template Configuration Properties
 
-See [Template Documentation](../implementation/templates.md#template-organization-modes) for details.
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `name` | string | `"default"` | Template set name |
+| `description` | string | `""` | Template set description |
+| `version` | string | `"1.0.0"` | Template version |
+| `outputFormat` | string | `"md"` | Default output format: "md" or "mdx" |
+| `fileGrouping` | string | `"flat"` | Default file grouping strategy |
+| `filenameCase` | string | `"lowercase"` | Default filename case handling |
+| `combineMembers` | boolean | `true` | Combine members with parent type vs. separate files |
+| `generateIndexFiles` | boolean | `true` | Generate namespace and assembly index files |
+| `includeInheritedMembers` | boolean | `false` | Include inherited members in type documentation |
+| `templates.class` | string | `"class.mustache"` | Template file for classes |
+| `templates.interface` | string | `"interface.mustache"` | Template file for interfaces |
+| `templates.enum` | string | `"enum.mustache"` | Template file for enums |
+| `templates.struct` | string | `"struct.mustache"` | Template file for structs |
+| `templates.delegate` | string | `"delegate.mustache"` | Template file for delegates |
+| `templates.link` | string | `"link.mustache"` | **Required**: Template for rendering individual links |
+| `templates.member` | string | `"member.mustache"` | Template for individual members (when `combineMembers=false`) |
 
-### Processing Configuration
-Controls what content is included and how it's processed:
+### Template Organization Modes
 
-```json
-{
-  "processing": {
-    "includePrivateMembers": false,     // Include private API members
-    "includeInternalMembers": false,    // Include internal API members
-    "generateIndexFiles": true,         // Create namespace/assembly indexes
-    "createAssemblyIndexes": true,      // Create assembly overview files
-    "validateLinks": true,              // Validate link targets
-    "processInheritance": true,         // Include inheritance information
-    "includeSourceLinks": false,        // Include source code links
-    "generateMetadata": true            // Include metadata in output
-  }
-}
-```
+**Combined Members Mode (`combineMembers: true`)** - Default
+- All members documented on parent type's page with anchor links
+- `SadConsole.ColoredGlyph` → `ColoredGlyph.md` (includes all members)
+- `SadConsole.ColoredGlyph.Foreground` → `ColoredGlyph.md#foreground` (anchor link)
 
-### File Grouping Configuration
-Controls how output files are organized:
+**Separate Files Mode (`combineMembers: false`)**
+- Each member gets its own documentation file
+- `SadConsole.ColoredGlyph` → `ColoredGlyph.md`
+- `SadConsole.ColoredGlyph.Foreground` → `ColoredGlyph.Foreground.md`
 
-```json
-{
-  "fileGrouping": {
-    "maxDirectoryDepth": 10,            // Maximum nested directory depth
-    "groupingStrategies": [             // Available grouping strategies
-      "flat", "namespace", "assembly-namespace", "assembly-flat"
-    ],
-    "assemblyDetection": {
-      "useMetadataAssemblyInfo": true,  // Use assembly info from metadata
-      "fallbackToFilename": true,       // Fall back to filename for assembly
-      "customAssemblyMapping": {}       // Custom UID to assembly mapping
-    },
-    "namespaceFiltering": {
-      "excludePatterns": [],            // Namespace patterns to exclude
-      "includeOnlyPatterns": []         // Only include matching patterns
-    }
-  }
-}
-```
+See [Template Documentation](../implementation/templates.md#template-organization-modes) for complete details.
 
-### Link Processing Configuration
-Controls how links are resolved and validated:
+## CLI Option Priority
 
-```json
-{
-  "linkProcessing": {
-    "resolveExternalLinks": true,       // Resolve external link URLs
-    "externalLinkValidation": false,    // Validate external URLs (slow)
-    "brokenLinkHandling": "warn",       // How to handle broken links: ignore, warn, error
-    "generateLinkReport": true,         // Generate link validation report
-    "customLinkResolvers": [],          // Custom link resolution rules
-    "externalLinkMappings": {           // Custom external link mappings
-      "System.": "https://docs.microsoft.com/dotnet/api/"
-    }
-  }
-}
-```
+The command-line interface uses the following priority order for configuration values:
 
-## Environment Variables
+1. **CLI Arguments** (highest priority) - Override everything
+2. **Template Configuration** (default values) - Used when CLI arguments not provided
+3. **System Defaults** (fallback) - Used if template.json is missing or invalid
 
-Environment variables use the format `DOCFX_MUSTACHE_<SECTION>_<SETTING>`:
+### Examples of Priority Resolution
 
 ```bash
-# Basic settings
-export DOCFX_MUSTACHE_INPUT="/path/to/api"
-export DOCFX_MUSTACHE_OUTPUT="/path/to/docs"
-export DOCFX_MUSTACHE_FORMAT="mdx"
+# Uses template defaults entirely
+DocFXMustache -i ./api -o ./docs -t ./templates/starlight
+# → outputFormat: "mdx", fileGrouping: "namespace", filenameCase: "lowercase"
 
-# Nested settings
-export DOCFX_MUSTACHE_OUTPUT_DEFAULTFORMAT="mdx"
-export DOCFX_MUSTACHE_PROCESSING_INCLUDEPRIVATE="true"
-export DOCFX_MUSTACHE_FILEGROUPING_MAXDIRECTORYDEPTH="5"
+# Partial CLI override
+DocFXMustache -i ./api -o ./docs -t ./templates/starlight --format md
+# → outputFormat: "md" (CLI), fileGrouping: "namespace" (template), filenameCase: "lowercase" (template)
+
+# Full CLI override  
+DocFXMustache -i ./api -o ./docs -t ./templates/starlight --format md --grouping flat --case mixed
+# → outputFormat: "md" (CLI), fileGrouping: "flat" (CLI), filenameCase: "mixed" (CLI)
 ```
 
-## Configuration Validation
+The output clearly indicates the source of each setting:
+- `(from template)` - Value came from template configuration
+- `(overridden)` - Value was overridden by CLI argument
+
+## Validation Rules
 
 ### Required Settings
-- `input`: Must be a valid directory path
-- `output`: Must be a writable directory path
+- `input`: Must be a valid directory path containing YAML files
+- `output`: Must be a writable directory path  
+- `templates`: Must be a valid directory path containing template.json
 
-### Optional Settings with Defaults
-- `format`: Defaults to "md"
-- `grouping`: Defaults to "flat"
-- `templates`: Defaults to built-in templates
+### Format Validation
+- `outputFormat` / `--format`: Must be "md" or "mdx"
+- `fileGrouping` / `--grouping`: Must be "flat", "namespace", "assembly-namespace", or "assembly-flat"
+- `filenameCase` / `--case`: Must be "lowercase", "uppercase", or "mixed"
 
-### Validation Rules
-- Input directory must exist and contain YAML files
-- Output directory must be writable
-- Template directory must exist if specified
-- Format must be "md" or "mdx"
-- Grouping strategy must be valid
+### Template Validation
+- Templates directory must contain `template.json`
+- Templates directory must contain `link.mustache` (required)
+- Template files specified in `template.json` must exist
 
-## Configuration Best Practices
+## Current Limitations
 
-### Development Configuration
-```json
-{
-  "verbose": true,
-  "dryRun": true,
-  "processing": {
-    "validateLinks": true,
-    "generateLinkReport": true
-  }
-}
-```
+The following features are documented but not yet implemented:
 
-### Production Configuration
-```json
-{
-  "overwrite": true,
-  "processing": {
-    "includePrivateMembers": false,
-    "validateLinks": true
-  },
-  "output": {
-    "cleanOutputDirectory": true,
-    "createBackups": true
-  }
-}
-```
+- **Configuration file support** (`docfx-mustache.json`)
+- **Environment variables** 
+- **Configuration profiles** (development, production, etc.)
+- **Advanced processing options** (include-private, validate-links, etc.)
+- **Link processing configuration**
+- **File grouping fine-tuning**
 
-### CI/CD Configuration
-```json
-{
-  "verbose": false,
-  "overwrite": true,
-  "linkProcessing": {
-    "brokenLinkHandling": "error"
-  }
-}
-```
+These features are planned for future releases as the project moves through Phase 4 (File Generation) and Phase 5 (Testing & Polish).
 
-## Custom Configuration Profiles
+### Built-in Templates
 
-### Profile-Based Configuration
-Support for different configuration profiles:
+### Basic Template Set
+Location: `templates/basic/`
+- **Purpose**: General-purpose Markdown documentation
+- **Defaults**: MD format, flat grouping, lowercase filenames
+- **Organization**: Combined members mode by default
+- **Features**: Clean, readable documentation with proper cross-references
 
-```bash
-# Use development profile
-DocFXMustache --profile development
+### Starlight Template Set  
+Location: `templates/starlight/`
+- **Purpose**: Astro Starlight documentation framework
+- **Defaults**: MDX format, namespace grouping, lowercase filenames  
+- **Organization**: Combined members mode by default
+- **Features**: Integration with Starlight's documentation features
 
-# Use production profile  
-DocFXMustache --profile production
-```
-
-### Profile Configuration Files
-- `docfx-mustache.development.json`
-- `docfx-mustache.production.json`
-- `docfx-mustache.ci.json`
-
-### Profile Inheritance
-Profiles can inherit from base configuration:
-
-```json
-{
-  "inherits": "docfx-mustache.json",
-  "overwrite": true,
-  "verbose": false
-}
-```
+Both templates can have their defaults overridden using CLI options (`--format`, `--grouping`, `--case`).

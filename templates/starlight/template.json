@@ -1,0 +1,22 @@
+{
+  "name": "starlight",
+  "description": "Starlight documentation template with Astro MDX support",
+  "version": "1.0.0",
+  "outputFormat": "mdx",
+  "fileGrouping": "namespace",
+  "filenameCase": "lowercase",
+  "combineMembers": true,
+  "generateIndexFiles": true,
+  "includeInheritedMembers": false,
+  "templates": {
+    "class": "class.mustache",
+    "interface": "interface.mustache",
+    "enum": "enum.mustache",
+    "struct": "struct.mustache",
+    "namespace": "namespace.mustache",
+    "assembly": "assembly.mustache",
+    "link": "link.mustache",
+    "member": "member.mustache",
+    "delegate": "delegate.mustache"
+  }
+}

@@ -1,0 +1,46 @@
+# {{name}}
+
+{{#summary}}
+{{summary}}
+{{/summary}}
+
+**Namespace:** {{namespace}}  
+**Type:** {{type}}
+
+{{#hasParameters}}
+**Parameters:**
+
+{{#parameters}}
+- `{{name}}` (<xref uid="{{type.uid}}">{{type.name}}</xref>): {{description}}
+{{/parameters}}
+
+{{/hasParameters}}
+{{#hasReturns}}
+**Returns:** <xref uid="{{returns.type.uid}}">{{returns.type.name}}</xref>
+
+{{#returns.description}}
+{{returns.description}}
+{{/returns.description}}
+
+{{/hasReturns}}
+{{#hasExceptions}}
+## Exceptions
+
+{{#exceptions}}
+- <xref uid="{{type.uid}}">{{type.name}}</xref>: {{description}}
+{{/exceptions}}
+
+{{/hasExceptions}}
+{{#syntax}}
+## Syntax
+
+```csharp
+{{syntax}}
+```
+
+{{/syntax}}
+{{#remarks}}
+## Remarks
+
+{{remarks}}
+{{/remarks}}

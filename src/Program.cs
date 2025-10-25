@@ -1,4 +1,6 @@
 ﻿using System.CommandLine;
+using System.Text.Json;
+using DocFXMustache.Models;
 using DocFXMustache.Services;
 using Microsoft.Extensions.Logging;
 
@@ -26,40 +28,39 @@ class Program
             IsRequired = true
         };
 
-        // Template directory option
-        var templateOption = new Option<DirectoryInfo>(
-            aliases: ["-t", "--template"],
+        // Templates directory option
+        var templatesOption = new Option<DirectoryInfo>(
+            aliases: ["-t", "--templates"],
             description: "Directory containing Mustache template files")
         {
             IsRequired = true
         };
 
         // Output format option
-        var formatOption = new Option<string>(
+        var formatOption = new Option<string?>(
             aliases: ["-f", "--format"],
-            description: "Output format (md or mdx)")
+            description: "Output format (md or mdx). If not specified, uses template default.")
         {
-            IsRequired = true
+            IsRequired = false
         };
         formatOption.AddValidator(result =>
         {
             var value = result.GetValueForOption(formatOption);
-            if (value != "md" && value != "mdx")
+            if (value != null && value != "md" && value != "mdx")
             {
                 result.ErrorMessage = "Format must be either 'md' or 'mdx'";
             }
         });
 
         // File grouping strategy option
-        var groupingOption = new Option<string>(
+        var groupingOption = new Option<string?>(
             aliases: ["-g", "--grouping"],
-            description: "File grouping strategy: flat, namespace, assembly-namespace, assembly-flat",
-            getDefaultValue: () => "flat");
+            description: "File grouping strategy: flat, namespace, assembly-namespace, assembly-flat. If not specified, uses template default.");
         groupingOption.AddValidator(result =>
         {
             var value = result.GetValueForOption(groupingOption);
             var validValues = new[] { "flat", "namespace", "assembly-namespace", "assembly-flat" };
-            if (!validValues.Contains(value))
+            if (value != null && !validValues.Contains(value))
             {
                 result.ErrorMessage = $"Grouping must be one of: {string.Join(", ", validValues)}";
             }
@@ -84,15 +85,14 @@ class Program
             getDefaultValue: () => false);
 
         // Filename case control option
-        var caseOption = new Option<string>(
+        var caseOption = new Option<string?>(
             aliases: ["--case"],
-            description: "Filename case: uppercase, lowercase, or mixed (default: lowercase)",
-            getDefaultValue: () => "lowercase");
+            description: "Filename case: uppercase, lowercase, or mixed. If not specified, uses template default.");
         caseOption.AddValidator(result =>
         {
             var value = result.GetValueForOption(caseOption);
             var validValues = new[] { "uppercase", "lowercase", "mixed" };
-            if (!validValues.Contains(value))
+            if (value != null && !validValues.Contains(value))
             {
                 result.ErrorMessage = $"Case must be one of: {string.Join(", ", validValues)}";
             }
@@ -101,7 +101,7 @@ class Program
         // Add options to root command
         rootCommand.AddOption(inputOption);
         rootCommand.AddOption(outputOption);
-        rootCommand.AddOption(templateOption);
+        rootCommand.AddOption(templatesOption);
         rootCommand.AddOption(formatOption);
         rootCommand.AddOption(groupingOption);
         rootCommand.AddOption(dryRunOption);
@@ -114,15 +114,15 @@ class Program
         {
             var input = context.ParseResult.GetValueForOption(inputOption)!;
             var output = context.ParseResult.GetValueForOption(outputOption)!;
-            var template = context.ParseResult.GetValueForOption(templateOption)!;
-            var format = context.ParseResult.GetValueForOption(formatOption)!;
-            var grouping = context.ParseResult.GetValueForOption(groupingOption)!;
+            var templates = context.ParseResult.GetValueForOption(templatesOption)!;
+            var format = context.ParseResult.GetValueForOption(formatOption);
+            var grouping = context.ParseResult.GetValueForOption(groupingOption);
             var dryRun = context.ParseResult.GetValueForOption(dryRunOption);
             var verbose = context.ParseResult.GetValueForOption(verboseOption);
             var force = context.ParseResult.GetValueForOption(forceOption);
-            var caseControl = context.ParseResult.GetValueForOption(caseOption)!;
+            var caseControl = context.ParseResult.GetValueForOption(caseOption);
             
-            await ProcessCommand(input, output, template, format, grouping, dryRun, verbose, force, caseControl);
+            await ProcessCommand(input, output, templates, format, grouping, dryRun, verbose, force, caseControl);
         });
 
         return await rootCommand.InvokeAsync(args);
@@ -131,24 +131,33 @@ class Program
     private static async Task ProcessCommand(
         DirectoryInfo input,
         DirectoryInfo output,
-        DirectoryInfo template,
-        string format,
-        string grouping,
+        DirectoryInfo templates,
+        string? format,
+        string? grouping,
         bool dryRun,
         bool verbose,
         bool force,
-        string caseControl)
+        string? caseControl)
     {
+        // Load template configuration to get defaults
+        var templateConfig = LoadTemplateConfiguration(templates.FullName);
+        
+        // Resolve final values: CLI overrides template defaults
+        var finalFormat = format ?? templateConfig.OutputFormat;
+        var finalGrouping = grouping ?? templateConfig.FileGrouping;
+        var finalCaseControl = caseControl ?? templateConfig.FilenameCase;
+
         Console.WriteLine("DocFX Mustache - Processing...");
         Console.WriteLine($"Input Directory: {input.FullName}");
         Console.WriteLine($"Output Directory: {output.FullName}");
-        Console.WriteLine($"Template Directory: {template.FullName}");
-        Console.WriteLine($"Output Format: {format}");
-        Console.WriteLine($"Grouping Strategy: {grouping}");
+        Console.WriteLine($"Templates Directory: {templates.FullName}");
+        Console.WriteLine($"Template: {templateConfig.Name} v{templateConfig.Version}");
+        Console.WriteLine($"Output Format: {finalFormat}{(format == null ? " (from template)" : " (overridden)")}");
+        Console.WriteLine($"Grouping Strategy: {finalGrouping}{(grouping == null ? " (from template)" : " (overridden)")}");
+        Console.WriteLine($"Filename Case: {finalCaseControl}{(caseControl == null ? " (from template)" : " (overridden)")}");
         Console.WriteLine($"Dry Run: {dryRun}");
         Console.WriteLine($"Verbose: {verbose}");
         Console.WriteLine($"Force Overwrite: {force}");
-        Console.WriteLine($"Filename Case: {caseControl}");
 
         // Validate input directory exists
         if (!input.Exists)
@@ -157,10 +166,10 @@ class Program
             Environment.Exit(1);
         }
 
-        // Validate template directory exists
-        if (!template.Exists)
+        // Validate templates directory exists
+        if (!templates.Exists)
         {
-            Console.Error.WriteLine($"Error: Template directory '{template.FullName}' does not exist.");
+            Console.Error.WriteLine($"Error: Templates directory '{templates.FullName}' does not exist.");
             Environment.Exit(1);
         }
 
@@ -187,9 +196,9 @@ class Program
         programLogger.LogInformation("DocFX Mustache - Starting processing");
         programLogger.LogInformation("Input: {InputDirectory}", input.FullName);
         programLogger.LogInformation("Output: {OutputDirectory}", output.FullName);
-        programLogger.LogInformation("Template: {TemplateDirectory}", template.FullName);
+        programLogger.LogInformation("Templates: {TemplatesDirectory}", templates.FullName);
         programLogger.LogInformation("Format: {Format}, Grouping: {Grouping}, Case: {Case}", 
-            format, grouping, caseControl);
+            finalFormat, finalGrouping, finalCaseControl);
 
         // Initialize services
         var parsingService = new MetadataParsingService(parsingLogger);
@@ -202,7 +211,7 @@ class Program
             Console.WriteLine("\n🔍 Phase 2 - Pass 1: Discovery");
             Console.WriteLine("Building UID mappings and file structure...");
             
-            var uidMappings = await discoveryService.BuildUidMappingsAsync(input.FullName, grouping, caseControl);
+            var uidMappings = await discoveryService.BuildUidMappingsAsync(input.FullName, finalGrouping, finalCaseControl);
             
             programLogger.LogInformation("Discovery phase completed successfully");
             
@@ -255,5 +264,44 @@ class Program
         Console.WriteLine("📝 Ready to implement core processing logic...");
 
         await Task.CompletedTask; // Placeholder for async operations
+    }
+
+    /// <summary>
+    /// Load template configuration from template.json in the specified directory
+    /// </summary>
+    private static TemplateConfiguration LoadTemplateConfiguration(string templateDirectory)
+    {
+        var configPath = Path.Combine(templateDirectory, "template.json");
+
+        if (!File.Exists(configPath))
+        {
+            Console.WriteLine($"Warning: template.json not found at {configPath}, using default configuration");
+            return new TemplateConfiguration();
+        }
+
+        try
+        {
+            var json = File.ReadAllText(configPath);
+            var config = JsonSerializer.Deserialize<TemplateConfiguration>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                ReadCommentHandling = JsonCommentHandling.Skip,
+                AllowTrailingCommas = true
+            });
+
+            if (config == null)
+            {
+                Console.WriteLine("Warning: Failed to deserialize template.json, using default configuration");
+                return new TemplateConfiguration();
+            }
+
+            return config;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Warning: Error loading template configuration from {configPath}: {ex.Message}");
+            Console.WriteLine("Using default configuration");
+            return new TemplateConfiguration();
+        }
     }
 }
