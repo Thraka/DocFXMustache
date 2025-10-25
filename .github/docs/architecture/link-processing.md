@@ -223,8 +223,8 @@ Relative path: "../../ColoredGlyph.md"
 
 The link processing system is implemented across several service classes and models:
 
-### 1. Link Resolution Service (Pass 1 & 2)
-**Implementation:** `src/Services/LinkResolutionService.cs`
+### 1. Link Resolution Service (Pass 1 & 2) ✅
+**Implementation:** `src/Services/LinkResolutionService.cs` - **COMPLETE**
 
 **Key Responsibilities:**
 - **Pass 1**: Records generated file paths and external YAML references
@@ -238,8 +238,8 @@ The link processing system is implemented across several service classes and mod
 
 **Data Models:** `src/Models/OutputFileInfo.cs`
 
-### 2. XRef Processing Service (Pass 2 Only)
-**Implementation:** `src/Services/XrefProcessingService.cs`
+### 2. XRef Processing Service (Pass 2 Only) ✅
+**Implementation:** `src/Services/XrefProcessingService.cs` - **COMPLETE**
 
 **Key Responsibilities:**
 - Extracts `<xref>` tags from generated markdown using regex
@@ -250,18 +250,18 @@ The link processing system is implemented across several service classes and mod
 
 **Data Models:** `src/Models/LinkInfo.cs`
 
-### 3. Template Processing Service (Pass 1 Only)
-**Status:** Not yet implemented
+### 3. Template Processing Service (Pass 1 Only) ✅
+**Implementation:** `src/Services/TemplateProcessingService.cs` - **COMPLETE**
 
-**Planned Responsibilities:**
+**Responsibilities:**
 - Render Mustache templates with YAML data
 - Preserve `<xref>` tags in output (don't resolve during Pass 1)
 - Support different template packs (basic, starlight, etc.)
 
-### 4. Documentation Generator (Orchestrates Both Passes)
-**Status:** Not yet implemented
+### 4. Documentation Generator (Orchestrates Both Passes) ✅
+**Implementation:** `src/Program.cs` - **COMPLETE**
 
-**Planned Workflow:**
+**Workflow:**
 1. **Pass 1**: Render all templates → Write files → Record UID mappings
 2. **Pass 2**: Read files → Process xrefs → Write updated files
 

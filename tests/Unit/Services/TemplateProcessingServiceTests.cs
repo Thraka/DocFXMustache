@@ -136,7 +136,7 @@ public class TemplateProcessingServiceTests
         var result = service.RenderType(typeDoc);
 
         // Assert
-        Assert.Contains("<xref uid=\"System.Object\">", result);
+        Assert.Contains("<xref href=\"System.Object\">", result);
     }
 
     [Fact]

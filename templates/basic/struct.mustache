@@ -11,7 +11,7 @@
 ## Inheritance
 
 {{#inheritance}}
-- <xref uid="{{uid}}">{{name}}</xref>
+- <xref href="{{uid}}">{{name}}</xref>
 {{/inheritance}}
 
 {{/hasInheritance}}
@@ -19,7 +19,7 @@
 ## Implements
 
 {{#implements}}
-- <xref uid="{{uid}}">{{name}}</xref>
+- <xref href="{{uid}}">{{name}}</xref>
 {{/implements}}
 
 {{/hasImplements}}
@@ -51,7 +51,7 @@
 **Parameters:**
 
 {{#parameters}}
-- `{{name}}` (<xref uid="{{type.uid}}">{{type.name}}</xref>): {{description}}
+- `{{name}}` (<xref href="{{type.uid}}">{{type.name}}</xref>): {{description}}
 {{/parameters}}
 
 {{/hasParameters}}
@@ -74,7 +74,7 @@
 {{summary}}
 {{/summary}}
 
-**Type:** <xref uid="{{returns.type.uid}}">{{returns.type.name}}</xref>
+**Type:** <xref href="{{returns.type.uid}}">{{returns.type.name}}</xref>
 
 {{#syntax}}
 ```csharp
@@ -103,12 +103,12 @@
 **Parameters:**
 
 {{#parameters}}
-- `{{name}}` (<xref uid="{{type.uid}}">{{type.name}}</xref>): {{description}}
+- `{{name}}` (<xref href="{{type.uid}}">{{type.name}}</xref>): {{description}}
 {{/parameters}}
 
 {{/hasParameters}}
 {{#hasReturns}}
-**Returns:** <xref uid="{{returns.type.uid}}">{{returns.type.name}}</xref>
+**Returns:** <xref href="{{returns.type.uid}}">{{returns.type.name}}</xref>
 
 {{#returns.description}}
 {{returns.description}}
@@ -138,7 +138,7 @@
 {{summary}}
 {{/summary}}
 
-**Type:** <xref uid="{{returns.type.uid}}">{{returns.type.name}}</xref>
+**Type:** <xref href="{{returns.type.uid}}">{{returns.type.name}}</xref>
 
 {{#syntax}}
 ```csharp

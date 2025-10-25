@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Text.RegularExpressions;
 using DocFXMustache.Models;
 using Stubble.Core;
@@ -17,8 +18,8 @@ public partial class XrefProcessingService
     private readonly LinkResolutionService _linkResolver;
     private readonly string _linkTemplate;
     
-    // Regex to match xref tags: <xref href="UID" ...></xref>
-    [GeneratedRegex(@"<xref\s+href=""([^""]+)""[^>]*>(?:</xref>)?", RegexOptions.IgnoreCase)]
+    // Regex to match xref tags: <xref href="UID" ...>Display Name</xref>
+    [GeneratedRegex(@"<xref\s+href=""([^""]+)""[^>]*>([^<]*)</xref>", RegexOptions.IgnoreCase)]
     private static partial Regex XrefPattern();
     
     public XrefProcessingService(LinkResolutionService linkResolver, string templateDirectory)
@@ -75,25 +76,35 @@ public partial class XrefProcessingService
             return content;
         }
         
+        // First, decode HTML entities in the content to handle xref tags from YAML
+        content = WebUtility.HtmlDecode(content);
+        
         return XrefPattern().Replace(content, match =>
         {
-            if (!match.Success || match.Groups.Count < 2)
+            if (!match.Success || match.Groups.Count < 3)
             {
                 return match.Value; // Keep original if malformed
             }
             
             var uid = match.Groups[1].Value;
+            var displayName = match.Groups[2].Value;
             
             try
             {
                 // Create LinkInfo and render through template
                 var linkInfo = CreateLinkInfo(uid, currentFilePath);
+                // Use display name from xref tag if available, otherwise extract from UID
+                if (!string.IsNullOrEmpty(displayName))
+                {
+                    linkInfo.DisplayName = displayName;
+                }
                 return RenderLink(linkInfo);
             }
             catch (KeyNotFoundException)
             {
-                // UID not found - keep original xref tag or return placeholder
-                return $"[{ExtractDisplayName(uid)}](#unknown-reference)";
+                // UID not found - use display name from tag or extract from UID
+                var fallbackDisplayName = !string.IsNullOrEmpty(displayName) ? displayName : ExtractDisplayName(uid);
+                return $"[{fallbackDisplayName}](#unknown-reference)";
             }
         });
     }

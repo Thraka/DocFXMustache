@@ -128,6 +128,22 @@ class Program
         return await rootCommand.InvokeAsync(args);
     }
 
+    /// <summary>
+    /// Determines if an ItemType represents a top-level type that should have its own documentation file
+    /// </summary>
+    private static bool IsTopLevelType(ItemType itemType)
+    {
+        return itemType switch
+        {
+            ItemType.Class or
+            ItemType.Interface or
+            ItemType.Struct or
+            ItemType.Enum or
+            ItemType.Delegate => true,
+            _ => false
+        };
+    }
+
     private static async Task ProcessCommand(
         DirectoryInfo input,
         DirectoryInfo output,
@@ -238,14 +254,132 @@ class Program
             }
             else
             {
-                programLogger.LogInformation("Phase 3 not yet implemented - generation phase pending");
+                programLogger.LogInformation("Starting Phase 2 - Pass 2: Generation");
                 Console.WriteLine("\n📝 Phase 2 - Pass 2: Generation");
-                Console.WriteLine("(Not yet implemented - Phase 3 coming next)");
+                Console.WriteLine("Processing templates and generating documentation files...");
                 
-                // TODO: Implement Pass 2
-                // 1. XRef processing using UID mappings
-                // 2. Mustache template processing
-                // 3. File generation
+                // Initialize additional services for generation
+                var typeDocumentationLogger = loggerFactory.CreateLogger<TypeDocumentationService>();
+                var templateProcessingLogger = loggerFactory.CreateLogger<TemplateProcessingService>();
+                var linkResolutionLogger = loggerFactory.CreateLogger<LinkResolutionService>();
+                
+                var typeDocumentationService = new TypeDocumentationService(typeDocumentationLogger);
+                var templateProcessingService = new TemplateProcessingService(templates.FullName, templateProcessingLogger);
+                var linkResolutionService = new LinkResolutionService();
+                
+                // Populate LinkResolutionService with UID mappings from discovery phase
+                programLogger.LogDebug("Populating LinkResolutionService with {UidCount} UID mappings", uidMappings.UidToFilePath.Count);
+                foreach (var uidMapping in uidMappings.UidToFilePath)
+                {
+                    var absolutePath = Path.Combine(output.FullName, uidMapping.Value);
+                    linkResolutionService.RecordGeneratedFile(uidMapping.Key, absolutePath);
+                }
+                
+                // Also populate with external references from YAML files
+                var rootObjectsForExtRef = await parsingService.ParseDirectoryAsync(input.FullName);
+                foreach (var root in rootObjectsForExtRef)
+                {
+                    if (root.References != null)
+                    {
+                        foreach (var reference in root.References)
+                        {
+                            if (!string.IsNullOrEmpty(reference.Href) && !string.IsNullOrEmpty(reference.Uid))
+                            {
+                                linkResolutionService.RecordExternalReference(reference.Uid, reference.Href);
+                                programLogger.LogDebug("Recorded external reference: {Uid} -> {Href}", reference.Uid, reference.Href);
+                            }
+                        }
+                    }
+                }
+                
+                var xrefProcessingService = new XrefProcessingService(linkResolutionService, templates.FullName);
+
+                // Get all root objects again for processing
+                var rootObjectsForGeneration = await parsingService.ParseDirectoryAsync(input.FullName);
+                
+                var filesGenerated = 0;
+                var errorsEncountered = 0;
+
+                foreach (var root in rootObjectsForGeneration)
+                {
+                    if (!parsingService.ValidateMetadata(root))
+                    {
+                        programLogger.LogWarning("Skipping invalid metadata during generation");
+                        errorsEncountered++;
+                        continue;
+                    }
+
+                    // Process each top-level item (types, not members)
+                    foreach (var item in root.Items.Where(i => IsTopLevelType(i.Type)))
+                    {
+                        try
+                        {
+                            if (string.IsNullOrEmpty(item.Uid))
+                            {
+                                programLogger.LogWarning("Skipping item without UID");
+                                continue;
+                            }
+
+                            programLogger.LogDebug("Processing item {Uid} ({Type})", item.Uid, item.Type);
+                            
+                            // Step 1: Convert Item to TypeDocumentation
+                            var typeDoc = typeDocumentationService.ConvertItem(item, root.References, root.Items);
+                            
+                            // Step 2: Render through template (generates content with <xref> tags)
+                            var renderedContent = templateProcessingService.RenderType(typeDoc);
+                            
+                            // Step 3: Process XRef tags to convert them to actual links
+                            if (!uidMappings.UidToFilePath.TryGetValue(item.Uid, out var outputPath))
+                            {
+                                programLogger.LogWarning("No output path found for UID {Uid}", item.Uid);
+                                continue;
+                            }
+                            
+                            var finalContent = xrefProcessingService.ProcessXrefs(renderedContent, outputPath);
+                            
+                            // Step 4: Write the file
+                            var fullOutputPath = Path.Combine(output.FullName, outputPath);
+                            var outputDir = Path.GetDirectoryName(fullOutputPath);
+                            
+                            if (!Directory.Exists(outputDir))
+                            {
+                                Directory.CreateDirectory(outputDir!);
+                            }
+                            
+                            await File.WriteAllTextAsync(fullOutputPath, finalContent);
+                            filesGenerated++;
+                            
+                            if (verbose)
+                            {
+                                Console.WriteLine($"  ✅ Generated: {outputPath}");
+                            }
+                            
+                            programLogger.LogDebug("Generated file {OutputPath} for {Uid}", outputPath, item.Uid);
+                        }
+                        catch (Exception ex)
+                        {
+                            programLogger.LogError(ex, "Error processing item {Uid}", item.Uid);
+                            Console.Error.WriteLine($"  ❌ Error processing {item.Uid}: {ex.Message}");
+                            errorsEncountered++;
+                            
+                            if (verbose)
+                            {
+                                Console.Error.WriteLine($"     Stack trace: {ex.StackTrace}");
+                            }
+                        }
+                    }
+                }
+                
+                // Report results
+                Console.WriteLine($"\n🎉 Generation completed!");
+                Console.WriteLine($"   Files generated: {filesGenerated}");
+                if (errorsEncountered > 0)
+                {
+                    Console.WriteLine($"   Errors encountered: {errorsEncountered}");
+                }
+                
+                programLogger.LogInformation("Generation completed: {FilesGenerated} files generated, {ErrorsEncountered} errors", 
+                    filesGenerated, errorsEncountered);
             }
         }
         catch (Exception ex)
