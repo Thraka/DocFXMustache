@@ -237,7 +237,7 @@ class Program
             Console.WriteLine("\n🔍 Phase 2 - Pass 1: Discovery");
             Console.WriteLine("Building UID mappings and file structure...");
             
-            var uidMappings = await discoveryService.BuildUidMappingsAsync(input.FullName, finalGrouping, finalCaseControl);
+            var uidMappings = await discoveryService.BuildUidMappingsAsync(input.FullName, finalGrouping, finalCaseControl, finalFormat);
             
             programLogger.LogInformation("Discovery phase completed successfully");
             
@@ -333,7 +333,7 @@ class Program
                             programLogger.LogDebug("Processing item {Uid} ({Type})", item.Uid, item.Type);
                             
                             // Step 1: Convert Item to TypeDocumentation
-                            var typeDoc = typeDocumentationService.ConvertItem(item, root.References, root.Items);
+                            var typeDoc = typeDocumentationService.ConvertItem(item, root.References, root.Items, finalFormat);
                             
                             // Step 2: Render through template (generates content with <xref> tags)
                             var renderedContent = templateProcessingService.RenderType(typeDoc);

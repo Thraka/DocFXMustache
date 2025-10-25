@@ -27,8 +27,9 @@ public class TypeDocumentationService
     /// <param name="item">The YAML item to convert</param>
     /// <param name="references">The reference collection for resolving links</param>
     /// <param name="allItems">All items in the current root for finding children</param>
+    /// <param name="outputFormat">Output file format (md or mdx)</param>
     /// <returns>A TypeDocumentation object ready for template processing</returns>
-    public TypeDocumentation ConvertItem(Item item, Reference[] references, IList<Item> allItems)
+    public TypeDocumentation ConvertItem(Item item, Reference[] references, IList<Item> allItems, string outputFormat = "md")
     {
         if (item == null) throw new ArgumentNullException(nameof(item));
         if (string.IsNullOrEmpty(item.Uid)) throw new ArgumentException("Item must have a UID", nameof(item));
@@ -42,7 +43,7 @@ public class TypeDocumentationService
             fullName: item.FullName ?? item.Uid,
             type: item.Type,
             summary: FormatSummary(item.Summary),
-            link: CreateLink(item.Uid),
+            link: CreateLink(item.Uid, outputFormat),
             syntax: ExtractSyntax(item.Syntax),
             remarks: FormatSummary(item.Remarks),
             inheritance: GetReferencesArray(item.Inheritance, references),
@@ -55,7 +56,7 @@ public class TypeDocumentationService
         );
 
         // Find and add child members
-        FindAndAddChildren(typeDoc, allItems, references);
+        FindAndAddChildren(typeDoc, allItems, references, outputFormat);
 
         _logger.LogDebug("Converted {Uid} with {ChildCount} children", 
             item.Uid, 
@@ -68,7 +69,7 @@ public class TypeDocumentationService
     /// <summary>
     /// Finds and adds child members to a TypeDocumentation object.
     /// </summary>
-    private void FindAndAddChildren(TypeDocumentation parent, IList<Item> allItems, Reference[] references)
+    private void FindAndAddChildren(TypeDocumentation parent, IList<Item> allItems, Reference[] references, string outputFormat = "md")
     {
         foreach (var item in allItems)
         {
@@ -76,7 +77,7 @@ public class TypeDocumentationService
             if (item.Parent != parent.Uid)
                 continue;
 
-            var child = ConvertItem(item, references, allItems);
+            var child = ConvertItem(item, references, allItems, outputFormat);
 
             switch (child.Type)
             {
@@ -226,11 +227,11 @@ public class TypeDocumentationService
     /// <summary>
     /// Creates a Link object for a UID (used for the main type's link).
     /// </summary>
-    private Link CreateLink(string uid)
+    private Link CreateLink(string uid, string outputFormat = "md")
     {
         // For now, create internal links based on the UID
         // This will be enhanced with proper link resolution later
-        var fileName = GetSafeFileName(uid) + ".md";
+        var fileName = GetSafeFileName(uid) + $".{outputFormat}";
         return new Link(false, fileName);
     }
 

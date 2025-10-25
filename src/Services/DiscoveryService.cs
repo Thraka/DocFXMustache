@@ -29,8 +29,9 @@ public class DiscoveryService
     /// <param name="inputDirectory">Directory containing DocFX YAML files</param>
     /// <param name="groupingStrategy">Strategy for organizing output files</param>
     /// <param name="caseControl">Filename case control: uppercase, lowercase, or mixed</param>
+    /// <param name="outputFormat">Output file format (md or mdx)</param>
     /// <returns>UidMappings containing all discovered information</returns>
-    public async Task<UidMappings> BuildUidMappingsAsync(string inputDirectory, string groupingStrategy, string caseControl = "lowercase")
+    public async Task<UidMappings> BuildUidMappingsAsync(string inputDirectory, string groupingStrategy, string caseControl = "lowercase", string outputFormat = "md")
     {
         if (string.IsNullOrEmpty(inputDirectory))
             throw new ArgumentException("Input directory cannot be null or empty", nameof(inputDirectory));
@@ -56,7 +57,7 @@ public class DiscoveryService
                 continue;
             }
 
-            ProcessRootObject(root, mappings, groupingStrategy, caseControl);
+            ProcessRootObject(root, mappings, groupingStrategy, caseControl, outputFormat);
             processedCount++;
         }
 
@@ -76,7 +77,7 @@ public class DiscoveryService
     /// <summary>
     /// Processes a single Root object and extracts all UIDs and mappings
     /// </summary>
-    private void ProcessRootObject(Root root, UidMappings mappings, string groupingStrategy, string caseControl)
+    private void ProcessRootObject(Root root, UidMappings mappings, string groupingStrategy, string caseControl, string outputFormat)
     {
         var itemsProcessed = 0;
         
@@ -92,7 +93,7 @@ public class DiscoveryService
             mappings.UidToItem[item.Uid] = item;
 
             // Determine output path based on grouping strategy
-            var outputPath = DetermineOutputPath(item, groupingStrategy, caseControl);
+            var outputPath = DetermineOutputPath(item, groupingStrategy, caseControl, outputFormat);
             mappings.UidToFilePath[item.Uid] = outputPath;
             
             _logger.LogDebug("Mapped UID {Uid} to {OutputPath}", item.Uid, outputPath);
@@ -124,7 +125,7 @@ public class DiscoveryService
     /// <summary>
     /// Determines the output file path for an item based on the grouping strategy
     /// </summary>
-    public string DetermineOutputPath(Item item, string groupingStrategy, string caseControl = "lowercase")
+    public string DetermineOutputPath(Item item, string groupingStrategy, string caseControl = "lowercase", string outputFormat = "md")
     {
         // For flat grouping, use the fully qualified UID; otherwise use just the type name
         var fileName = groupingStrategy.ToLowerInvariant() == "flat"
@@ -136,10 +137,10 @@ public class DiscoveryService
 
         return groupingStrategy.ToLowerInvariant() switch
         {
-            "flat" => $"{fileName}.md",
-            "namespace" => $"{GetNamespaceDirectory(item.Namespace)}/{fileName}.md",
-            "assembly-namespace" => $"{GetAssemblyDirectory(item.Assemblies)}/{GetNamespaceDirectory(item.Namespace)}/{fileName}.md",
-            "assembly-flat" => $"{GetAssemblyDirectory(item.Assemblies)}/{fileName}.md",
+            "flat" => $"{fileName}.{outputFormat}",
+            "namespace" => $"{GetNamespaceDirectory(item.Namespace)}/{fileName}.{outputFormat}",
+            "assembly-namespace" => $"{GetAssemblyDirectory(item.Assemblies)}/{GetNamespaceDirectory(item.Namespace)}/{fileName}.{outputFormat}",
+            "assembly-flat" => $"{GetAssemblyDirectory(item.Assemblies)}/{fileName}.{outputFormat}",
             _ => throw new ArgumentException($"Unknown grouping strategy: {groupingStrategy}")
         };
     }
