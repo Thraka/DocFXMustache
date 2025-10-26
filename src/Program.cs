@@ -99,10 +99,9 @@ class Program
         });
 
         // Generate index files option
-        var generateIndexOption = new Option<bool>(
+        var generateIndexOption = new Option<bool?>(
             aliases: ["--generate-index"],
-            description: "Generate index files (table of contents, assembly overviews, namespace indexes)",
-            getDefaultValue: () => false);
+            description: "Generate index files (table of contents, assembly overviews, namespace indexes). Overrides template setting if specified.");
 
         // Add options to root command
         rootCommand.AddOption(inputOption);
@@ -162,7 +161,7 @@ class Program
         bool verbose,
         bool force,
         string? caseControl,
-        bool generateIndex)
+        bool? generateIndex)
     {
         // Load template configuration to get defaults
         var templateConfig = LoadTemplateConfiguration(templates.FullName);
@@ -171,6 +170,7 @@ class Program
         var finalFormat = format ?? templateConfig.OutputFormat;
         var finalGrouping = grouping ?? templateConfig.FileGrouping;
         var finalCaseControl = caseControl ?? templateConfig.FilenameCase;
+        var finalGenerateIndex = generateIndex ?? templateConfig.GenerateIndexFiles;
 
         Console.WriteLine("DocFX Mustache - Processing...");
         Console.WriteLine($"Input Directory: {input.FullName}");
@@ -183,7 +183,7 @@ class Program
         Console.WriteLine($"Dry Run: {dryRun}");
         Console.WriteLine($"Verbose: {verbose}");
         Console.WriteLine($"Force Overwrite: {force}");
-        Console.WriteLine($"Generate Index Files: {generateIndex}");
+        Console.WriteLine($"Generate Index Files: {finalGenerateIndex}{(generateIndex == null ? " (from template)" : " (overridden)")}");
 
         // Validate input directory exists
         if (!input.Exists)
@@ -223,8 +223,8 @@ class Program
         programLogger.LogInformation("Input: {InputDirectory}", input.FullName);
         programLogger.LogInformation("Output: {OutputDirectory}", output.FullName);
         programLogger.LogInformation("Templates: {TemplatesDirectory}", templates.FullName);
-        programLogger.LogInformation("Format: {Format}, Grouping: {Grouping}, Case: {Case}", 
-            finalFormat, finalGrouping, finalCaseControl);
+        programLogger.LogInformation("Format: {Format}, Grouping: {Grouping}, Case: {Case}, GenerateIndex: {GenerateIndex}", 
+            finalFormat, finalGrouping, finalCaseControl, finalGenerateIndex);
 
         // Initialize services
         var parsingService = new MetadataParsingService(parsingLogger);
@@ -345,7 +345,9 @@ class Program
                                 continue;
                             }
                             
-                            var finalContent = xrefProcessingService.ProcessXrefs(renderedContent, outputPath);
+                            // Convert relative outputPath to absolute path for link resolution
+                            var absoluteOutputPath = Path.Combine(output.FullName, outputPath);
+                            var finalContent = xrefProcessingService.ProcessXrefs(renderedContent, absoluteOutputPath);
                             
                             // Step 4: Write the file
                             var fullOutputPath = Path.Combine(output.FullName, outputPath);
@@ -392,7 +394,7 @@ class Program
                     filesGenerated, errorsEncountered);
 
                 // Generate index files if requested
-                if (generateIndex)
+                if (finalGenerateIndex)
                 {
                     try
                     {
