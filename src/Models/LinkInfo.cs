@@ -20,7 +20,9 @@ public class LinkInfo
     /// The relative path from current file to target (includes anchor if applicable)
     /// </summary>
     public required string RelativePath { get; set; }
-    
+
+    public string RelativePathNoExtension => Path.ChangeExtension(RelativePath, null);
+
     /// <summary>
     /// Whether this is an external reference (e.g., System.String)
     /// </summary>

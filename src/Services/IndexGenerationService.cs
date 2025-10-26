@@ -436,6 +436,7 @@ public class AssemblyTocEntry
 {
     public string Name { get; set; } = string.Empty;
     public string Path { get; set; } = string.Empty;
+    public string PathNoExtension => System.IO.Path.ChangeExtension(Path, null);
     public List<NamespaceTocEntry> Namespaces { get; set; } = new();
 }
 
@@ -446,6 +447,7 @@ public class NamespaceTocEntry
 {
     public string Name { get; set; } = string.Empty;
     public string Path { get; set; } = string.Empty;
+    public string PathNoExtension => System.IO.Path.GetFileNameWithoutExtension(Path) != string.Empty ? System.IO.Path.ChangeExtension(Path, null) : Path;
     public int TypeCount { get; set; }
 }
 
@@ -468,6 +470,7 @@ public class NamespaceIndexEntry
 {
     public string Name { get; set; } = string.Empty;
     public string Path { get; set; } = string.Empty;
+    public string PathNoExtension => System.IO.Path.GetFileNameWithoutExtension(Path) != string.Empty ? System.IO.Path.ChangeExtension(Path, null) : Path;
     public List<TypeIndexEntry> Types { get; set; } = new();
 }
 
@@ -500,6 +503,7 @@ public class TypeIndexEntry
     public string FullName { get; set; } = string.Empty;
     public string Kind { get; set; } = string.Empty;
     public string Path { get; set; } = string.Empty;
+    public string PathNoExtension => System.IO.Path.GetFileNameWithoutExtension(Path) != string.Empty ? System.IO.Path.ChangeExtension(Path, null) : Path;
     public string Summary { get; set; } = string.Empty;
 }
 
