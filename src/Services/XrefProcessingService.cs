@@ -18,8 +18,8 @@ public partial class XrefProcessingService
     private readonly LinkResolutionService _linkResolver;
     private readonly string _linkTemplate;
     
-    // Regex to match xref tags: <xref href="UID" ...>Display Name</xref>
-    [GeneratedRegex(@"<xref\s+href=""([^""]+)""[^>]*>([^<]*)</xref>", RegexOptions.IgnoreCase)]
+    // Regex to match xref tags: <xref href="UID" ...>Display Name</xref> or <xref href="UID" ... />
+    [GeneratedRegex(@"<xref\s+href=""([^""]+)""[^>]*(?:>(.*?)</xref>|\s*/>)", RegexOptions.IgnoreCase)]
     private static partial Regex XrefPattern();
     
     public XrefProcessingService(LinkResolutionService linkResolver, string templateDirectory)
@@ -81,13 +81,13 @@ public partial class XrefProcessingService
         
         return XrefPattern().Replace(content, match =>
         {
-            if (!match.Success || match.Groups.Count < 3)
+            if (!match.Success || match.Groups.Count < 2)
             {
                 return match.Value; // Keep original if malformed
             }
             
             var uid = match.Groups[1].Value;
-            var displayName = match.Groups[2].Value;
+            var displayName = match.Groups.Count > 2 ? match.Groups[2].Value : string.Empty;
             
             try
             {
